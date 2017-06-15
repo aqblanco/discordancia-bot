@@ -1,9 +1,10 @@
 module.exports = 
     class Command {
-        constructor(label, desc, callback) {
+        constructor(label, desc, callback, displayOptions = []) {
             this.label = label;
             this.desc = desc;
             this.callback = callback;
+            this.displayOptions = displayOptions;
         }
 
         getLabel() {
@@ -15,6 +16,6 @@ module.exports =
         }
 
         execute(parameters) {
-            return this.callback(parameters);
+            return {result: this.callback(parameters), displayOptions: this.displayOptions};
         }
     }
