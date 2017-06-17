@@ -15,7 +15,6 @@ module.exports =
             console.log("Comando recibido: " + message.content);
             // Process request string
             var reqArray = message.content.split(' ');
-            //reqArray.splice(0, 1); // Remove prefix
             var request = reqArray[0];
             var params = [];
             if (reqArray.length > 1) {
@@ -45,13 +44,13 @@ module.exports =
         }
 
         getHelp() {
-            console.log(this.commands);
+            var prefix = this.cmdPrefix;
             var msg = "";
             this.commands.forEach(function(e) {
-                msg += e.getLabel() + " -> " + e.getDesc() + "\n";
+                msg += prefix + " " + e.getLabel() + " - " + e.getDesc() + "\n";
                 //faltan params
             })
-            msg += "ayuda -> Consulta la ayuda."
+            msg += prefix + " ayuda - Consulta la ayuda."
             return msg;
         }
 
