@@ -5,22 +5,27 @@ var Command = require("./command.class.js");
 
 module.exports = 
     class rueBot {
-        constructor() {
+
+        constructor(cmdPrefix) {
             this.commands = this.getCommandList();
+            this.cmdPrefix = cmdPrefix;
         }
 
         reply(message) {
+            console.log("Comando recibido: " + message.content);
             // Process request string
             var reqArray = message.content.split(' ');
+            //reqArray.splice(0, 1); // Remove prefix
             var request = reqArray[0];
             var params = [];
             if (reqArray.length > 1) {
-                params = reqArray.shift();
+                reqArray.splice(0, 1); // Remove command
+                params = reqArray;
             }
 
             var msg = "";
             var opt = {};
-            if (request === '-rueayuda') {
+            if (request === 'ayuda') {
                 msg = this.getHelp();
                 opt = {code: true};
             } else {
@@ -46,7 +51,7 @@ module.exports =
                 msg += e.getLabel() + " -> " + e.getDesc() + "\n";
                 //faltan params
             })
-            msg += "-rueayuda -> Consulta la ayuda."
+            msg += "ayuda -> Consulta la ayuda."
             return msg;
         }
 
@@ -58,7 +63,7 @@ module.exports =
 
         getCommandList() {
             var commands = [];
-            var randomMemberQuote = new Command('-ruefrase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
+            var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
             commands.push(randomMemberQuote);
             /*var help = new Command('-rueayuda', 'Consulta la ayuda.', this.getHelp, {code: true});
             commands.push(help);*/
