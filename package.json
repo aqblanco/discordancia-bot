@@ -1,18 +1,19 @@
 {
-  "name": "rueBot",
+  "name": "RueBot",
   "version": "1.0.0",
-  "description": "",
+  "description": "World Of WarCraft Guild Discord's Bot",
   "main": "main.js",
   "dependencies": {
     "discord.js": "^11.1.0",
     "ffmpeg-binaries": "^3.2.2-3",
-    "opusscript": "0.0.3"
+    "opusscript": "0.0.3",
+    "weasel.js": "~1.0.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Aquilino Blanco",
+  "license": "BSD-2-Clause"
 }
