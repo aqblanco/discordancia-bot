@@ -1,4 +1,4 @@
-module.exports = 
+module.exports =
     class Command {
         constructor(label, desc, f, fParams = [], displayOptions = []) {
             this.label = label;
@@ -11,7 +11,7 @@ module.exports =
         getLabel() {
             return this.label;
         }
-        
+
         getDesc() {
             return this.desc;
         }
@@ -27,26 +27,24 @@ module.exports =
         }*/
 
         execute(args, callback) {
-            console.log("execute");
             var f = this.f;
             var fParams = this.fParams;
-            
-            return new Promise(function (resolve, reject) {
-                /*var fWCallback = function(f, fParams, args, callback) {
-                    f(fParams, args);
-                };*/
-console.log(f);
-                var res = f(fParams, args);//executeSync(args);
-                if (typeof res != 'undefined') {
-                    resolve(res);
-                } else {
-                    reject(Error('Function is not valid.'))
-                }
 
-                /*fWCallback(f, fParams, args, function (err, res) {
-                    if (err) reject(err);
-                    else resolve(res);
-                });*/
-            });
+            //return new Promise(function(resolve, reject) {
+            /*var fWCallback = function(f, fParams, args, callback) {
+                f(fParams, args);
+            };*/
+            var res = f(fParams, args, callback); //executeSync(args);
+            /*if (res) {
+                resolve(res);
+            } else {
+                reject(Error('Function is not valid.'))
+            }*/
+
+            /*fWCallback(f, fParams, args, function (err, res) {
+                if (err) reject(err);
+                else resolve(res);
+            });*/
+            //});
         }
     }

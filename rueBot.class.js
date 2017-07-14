@@ -5,7 +5,7 @@ var Command = require("./command.class.js");
 var resourceManager = require("./resourceManager.class.js");
 var resources = require("./resources.js");
 
-module.exports = 
+module.exports =
     class rueBot {
 
         constructor(cmdPrefix) {
@@ -13,7 +13,7 @@ module.exports =
             this.cmdPrefix = cmdPrefix;
         }
 
-        async reply(message) {
+        reply(message) {
             console.log("Comando recibido: " + message.content);
             // Process request string
             var reqArray = message.content.split(' ');
@@ -25,31 +25,32 @@ module.exports =
             }
 
             var msg = "";
-            var opt = {};
+
             if (request === 'ayuda') {
                 msg = this.getHelp();
-                opt = {code: true};
+                opt = { code: true };
             } else {
                 var cmd = this.matchCommand(request);
                 if (cmd) {
-                    cmd.addFParams({'message': message});
-                    //console.log(cmd.execute(args));
-                    //cmd.execute(args).then(function(msg) {
-                        cmd.execute(args, function(msg) {
-                        
-                        console.log("Entra then")
-                        if (msg !== "") {
-                            message.channel.send(msg, opt)
-                            .then(m => console.log(`Mensaje enviado: ${m.content}`))
-                            .catch(console.error);
+                    // Send the message object to the command
+                    cmd.addFParams({ 'message': message });
+
+                    cmd.execute(args, function(msg, isEmbed = false) {
+                        var formatedMsg;
+                        // Correctly generate embed object if needed
+                        if (isEmbed) {
+                            var embed = msg;
+                            formatedMsg = { embed };
+                        } else {
+                            formatedMsg = msg;
+                        };
+
+                        if (formatedMsg !== "") {
+                            message.channel.send(formatedMsg)
+                                .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
+                                .catch(console.error);
                         }
-                        });
-                    /*}, function(error) {
-                        console.log("Entra error")
-                        console.log(error);
-                    });*/
-                    /*msg = exe.result;
-                    opt = exe.displayOptions;*/                    
+                    });
                 }
             }
         }
@@ -65,10 +66,10 @@ module.exports =
             return msg;
         }
 
-        getRandomMemberQuote() {
+        getRandomMemberQuote(fParams, args, callback) {
             var messages = msgs.memberQuotes;
             var msg = botObj.getRandomStr(messages);
-            return msg;
+            callback(msg);
         }
 
         playSound(fParams, args) {
@@ -99,64 +100,52 @@ module.exports =
                             // Catch any errors that may arise
                             console.log(e);
                         });
-                        
+
                     })
                     .catch(console.log);
-                } else {
+            } else {
                 message.reply('You need to join a voice channel first!');
             }
-        return "";
+            return "";
         }
-    
-        getLogs(callback) {
-            console.log(callback);
-            console.log("getLogs")
+
+        getLogs(fParams, args, callback) {
             // Warcraft Logs api
             const api = require('weasel.js');
- 
-            //Set the public WCL api-key that you get from https://www.warcraftlogs.com/accounts/changeuser 
+
+            // Set the public WCL api-key that you get from https://www.warcraftlogs.com/accounts/changeuser 
             api.setApiKey('56503c747edc90d3caffd50accab1237');
-            
-            //Optional parameters for the api call. 
+
+            // Optional parameters for the api call. 
             var params = {};
 
-            //Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
-            api.getReportsGuild('Rue del Percebe', 'cthun', 'eu', params, function(err, data, callback) {
-                console.log("leidos")
+            // Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
+            api.getReportsGuild('Rue del Percebe', 'cthun', 'eu', params, function(err, data) {
                 if (err) {
-                //We caught an error, log the error object to the console and exit. 
+                    //We caught an error, log the error object to the console and exit. 
                     console.log(err);
                     return;
                 }
-                //Success, log the whole data object to the console. 
+                // Success, log the whole data object to the console. 
                 var lastN = 5;
                 var logsObj = data.slice(-lastN);
                 var logInfo = [];
                 logsObj.forEach(function(e) {
+                    var d = new Date(e.start);
+                    var date = d.toLocaleString();
                     var info = [{
-                            name: "Nombre",
-                            value: e.title
-                        },
-                        {
-                            name: "Fecha",
-                            value: e.start
-                        },
-                        {
-                            name: "Autor",
-                            value: e.owner
-                        }
-                        ];
+                        name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
+                        value: date + " por " + e.owner
+                    }];
                     logInfo = logInfo.concat(info);
                 })
 
-                var embedMsg = {embed: {
+                var embedMsg = {
                     color: 3447003,
                     title: "Rue del Percebe en WarCraft Logs",
                     fields: logInfo,
-                }};
-                console.log(embedMsg);
-                callback(embedMsg);
-                //return embedMsg;
+                };
+                callback(embedMsg, true);
             });
         }
 
