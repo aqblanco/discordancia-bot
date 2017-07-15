@@ -22,29 +22,10 @@ module.exports =
             }
         }
 
-        /*executeSync(args) {
-            return this.f(this.fParams, args);
-        }*/
-
         execute(args, callback) {
             var f = this.f;
             var fParams = this.fParams;
 
-            //return new Promise(function(resolve, reject) {
-            /*var fWCallback = function(f, fParams, args, callback) {
-                f(fParams, args);
-            };*/
-            var res = f(fParams, args, callback); //executeSync(args);
-            /*if (res) {
-                resolve(res);
-            } else {
-                reject(Error('Function is not valid.'))
-            }*/
-
-            /*fWCallback(f, fParams, args, function (err, res) {
-                if (err) reject(err);
-                else resolve(res);
-            });*/
-            //});
+            var res = f(fParams, args, callback);
         }
     }

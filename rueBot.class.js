@@ -132,17 +132,23 @@ module.exports =
                 var logInfo = [];
                 logsObj.forEach(function(e) {
                     var d = new Date(e.start);
-                    var date = d.toLocaleString();
+                    var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    var date = d.toLocaleString('es-ES', options);
                     var info = [{
                         name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
-                        value: date + " por " + e.owner
+                        value: "Log del **" + date + "** por **" + e.owner + "**"
                     }];
                     logInfo = logInfo.concat(info);
                 })
 
                 var embedMsg = {
+                    author: {
+                        name: "WarCraft Logs",
+                        icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+                    },
                     color: 3447003,
                     title: "Rue del Percebe en WarCraft Logs",
+                    url: "https://www.warcraftlogs.com/guilds/154273",
                     fields: logInfo,
                 };
                 callback(embedMsg, true);
