@@ -28,7 +28,10 @@ module.exports =
 
             if (request === 'ayuda') {
                 msg = this.getHelp();
-                opt = { code: true };
+                var opt = { code: true };
+                message.channel.send(msg, opt)
+                    .then(m => console.log('Mensaje enviado: ' + JSON.stringify(msg)))
+                    .catch(console.error);
             } else {
                 var cmd = this.matchCommand(request);
                 if (cmd) {
