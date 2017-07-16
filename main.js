@@ -29,11 +29,14 @@ client.on('guildMemberAdd', member => {
 
 // Create an event listener for messages
 client.on('message', message => {
-  if (message.content.split(' ')[0] === cmdPrefix) {
-    // Cut the prefix (i.e. |rue) from the message
-    var tempA = message.content.split(' ');
+  var botUser = client.user.username;
+  var firstEle = message.content.split(/\s+/g)[0];
+
+  if (firstEle === cmdPrefix || message.mentions.users.find("username", botUser) !== null) {
+    // Cut the prefix or bot mention from the message
+    var tempA = message.content.split(/\s+/g);
     tempA.splice(0, 1); // Prefix item
-    message.content = tempA.join(" "); // Redo string
+    message.content = tempA.join(/\s+/g); // Redo string
 
     rueBotObj.reply(message);
   }
