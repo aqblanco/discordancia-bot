@@ -16,7 +16,7 @@ module.exports =
         reply(message) {
             console.log("Comando recibido: " + message.content);
             // Process request string
-            var reqArray = message.content.split(' ');
+            var reqArray = message.content.split(/\s+/g);
             var request = reqArray[0];
             var args = [];
             if (reqArray.length > 1) {
@@ -24,17 +24,19 @@ module.exports =
                 args = reqArray;
             }
 
-            var msg = "";
 
             if (request === 'ayuda') {
-                msg = this.getHelp();
-                var opt = { code: true };
-                message.channel.send(msg, opt)
-                    .then(m => console.log('Mensaje enviado: ' + JSON.stringify(msg)))
+                var command = "";
+                if (args.length > 0) command = args[0];
+                var embed = this.getHelp(this.getCommandList(), command);
+                console.log({ embed });
+                //var opt = { code: true };
+                message.channel.send({ embed })
+                    .then(m => console.log('Mensaje enviado: ' + JSON.stringify(embed)))
                     .catch(console.error);
             } else {
                 var cmd = this.matchCommand(request);
-                if (cmd) {
+                if (cmd != null) {
                     // Send the message object to the command
                     cmd.addFParams({ 'message': message });
 
@@ -54,19 +56,55 @@ module.exports =
                                 .catch(console.error);
                         }
                     });
+                } else {
+                    // Command is not valid
+                    //TODO: Notify user (whisp?)
                 }
             }
         }
 
-        getHelp() {
+        getHelp(commandList, command = "") {
             var prefix = this.cmdPrefix;
             var msg = "";
-            this.commands.forEach(function(e) {
-                msg += prefix + " " + e.getLabel() + " - " + e.getDesc() + "\n";
-                //faltan args
-            })
-            msg += prefix + " ayuda - Consulta la ayuda."
-            return msg;
+            console.log(command);
+            if (command === "") {
+                // Display the whole command list
+                commandList.forEach(function(e) {
+                    // Build argument string for the command signature
+                    var argString = "";
+                    e.getArgumentList().forEach(function(arg) {
+                        var tag = arg.tag;
+                        if (arg.optional) tag = "[" + tag + "]";
+                        argString += " *`" + tag + "`* ";
+                    });
+                    msg += "**`" + e.getLabel() + "`" + argString + "** - " + e.getDesc() + "\n";
+                })
+                msg += "**`ayuda`** - Consulta la ayuda."
+            } else {
+                // Display desired command help
+                var found = null;
+                commandList.forEach(function(c) {
+                   if (c.getLabel() == command) found = c;
+                });
+                if (found != null) {
+                    var args = found.getArgumentList();
+                    args.forEach(function(a) {
+                        var opt = "";
+                        if (a.optional) opt = "(Opcional) ";
+                        msg += a.tag + " " + opt + "- " + a.desc + "\n";
+                    });
+                }
+            }
+
+            var embedMsg = {
+                    author: {
+                        name: "Ayuda",
+                        icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+                    },
+                    color: 3447003,
+                    description: msg
+                };
+            return embedMsg;
         }
 
         getRandomMemberQuote(fParams, args, callback) {
@@ -162,7 +200,15 @@ module.exports =
             var commands = [];
             var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
             commands.push(randomMemberQuote);
-            var playAudio = new Command('audio', 'Envia un audio', this.playSound);
+            var playAudioArgs = [
+                {
+                    "tag": "recurso",
+                    "desc": "Nombre del audio que reproducir",
+                    "optional": false,
+                    "order": 1
+                }
+            ]
+            var playAudio = new Command('audio', 'Reproduce un audio por tu canal de voz actual.', this.playSound, [], playAudioArgs);
             commands.push(playAudio);
             var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
             commands.push(getLogs);

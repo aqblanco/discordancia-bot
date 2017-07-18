@@ -19,8 +19,10 @@ module.exports =
             this.label = label;
             this.desc = desc;
             this.f = f;
-            this.displayOptions = displayOptions;
+            //this.displayOptions = displayOptions;
             this.fParams = fParams;
+            this.argumentList = argumentList;
+            // Check no repeated order position
         }
 
         getLabel() {
@@ -32,6 +34,7 @@ module.exports =
         }
 
         getArgumentList() {
+            //TODO: Ordenar por order
             return this.argumentList;
         }
 
