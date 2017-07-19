@@ -1,5 +1,5 @@
 module.exports =
-/** Class representing a command. */
+    /** Class representing a command. */
     class Command {
 
         /**
@@ -40,8 +40,11 @@ module.exports =
 
         addFParams(newParams) {
             for (var key in newParams) {
+                //this.fParams.push({ key: newParams[key] });
                 this.fParams[key] = newParams[key];
             }
+
+            //this.fParams.push(newParams);
         }
 
         execute(args, callback) {
