@@ -1,13 +1,15 @@
+// Requires section
 var Command = require("../../command.class.js");
 
+// Main code section
 function getHelp(fParams, args, callback) {
-    //var prefix = this.cmdPrefix;
+    var prefix = fParams['cmdPrefix'];
     var commandList = fParams['commands'];
     var command = args.length == 0 ? "" : args[0];
     console.log(command);
     // empty check for command, else take first element
     var embedMsg = null;
-    if (command == []) {
+    if (command == "") {
         embedMsg = getWholeHelp(commandList);
     } else {
         embedMsg = getCommandHelp(commandList, command);
@@ -32,6 +34,7 @@ function getWholeHelp(commandList) {
         msg += "**`" + e.getLabel() + "`" + argString + "** - " + e.getDesc() + "\n";
     })
 
+    // Prepare embed output
     var embedMsg = {
         author: {
             name: "Ayuda",
@@ -65,6 +68,7 @@ function getCommandHelp(commandList, command) {
         });
     }
 
+    // Prepare embed output
     var embedMsg = {
         author: {
             name: "Ayuda",
@@ -77,7 +81,14 @@ function getCommandHelp(commandList, command) {
     return embedMsg;
 }
 
-var help = new Command('ayuda', 'Consulta la ayuda.', getHelp);
+var helpArgs = [{
+    "tag": "comando",
+    "desc": "Nombre del comando del que ver la ayuda extendida.",
+    "optional": true,
+    "order": 1
+}];
+
+var help = new Command('ayuda', 'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.', getHelp, [], helpArgs);
 
 
 // Exports section

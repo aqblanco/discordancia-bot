@@ -54,8 +54,11 @@ function addCommands(bot) {
     commands.push(help);
     // Add the command list as a parameter of the getHelp function
     commands.forEach(function(e) {
-        if (e.getLabel() == help.getLabel())
+        if (e.getLabel() == help.getLabel()) {
             e.addFParams({ 'commands': commands });
+            e.addFParams({ 'cmdPrefix': rueBotObj.cmdPrefix });
+            //Bot user
+        }
     });
     bot.addCommand(help);
 }
