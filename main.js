@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-var rueBot = require("./rueBot.class.js");
+var rueBot = require("./classes/rueBot.class.js");
 
 const token = "MzI0MTg5MTczOTQ4ODc0NzY0.DCGERw.YoXdt-pU-GYuG8nt77QUDrw2F20";
 const cmdPrefix = "|rue";
@@ -50,6 +50,22 @@ client.login(token);
 function addCommands(bot) {
     var commands = [];
 
+    // Random Member Quote
+    var randomMemberQuote = require("./plugins/randomMemberQuote/randomMemberQuote.js");
+    commands.push(randomMemberQuote);
+    bot.addCommand(randomMemberQuote);
+
+    // Play Audio
+    var playAudio = require("./plugins/playAudio/playAudio.js");
+    commands.push(playAudio);
+    bot.addCommand(playAudio);
+
+    // Get Logs
+    var getLogs = require("./plugins/getLogs/getLogs.js");
+    commands.push(getLogs);
+    bot.addCommand(getLogs);
+
+    // Help
     var help = require("./plugins/help/help.js");
     commands.push(help);
     // Add the command list as a parameter of the getHelp function
@@ -60,5 +76,6 @@ function addCommands(bot) {
             //Bot user
         }
     });
+
     bot.addCommand(help);
 }

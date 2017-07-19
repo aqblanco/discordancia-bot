@@ -1,12 +1,12 @@
 // Requires section
-var Command = require("../../command.class.js");
+var Command = require("../../classes/command.class.js");
 
 // Main code section
 function getHelp(fParams, args, callback) {
     var prefix = fParams['cmdPrefix'];
     var commandList = fParams['commands'];
     var command = args.length == 0 ? "" : args[0];
-    console.log(command);
+
     // empty check for command, else take first element
     var embedMsg = null;
     if (command == "") {
@@ -43,40 +43,55 @@ function getWholeHelp(commandList) {
         color: 3447003,
         description: msg
     };
-
+console.log(embedMsg);
     return embedMsg;
 }
 
 function getCommandHelp(commandList, command) {
     // Display desired command help
 
-    var msg = "";
+    var embedMsg = {};
 
     // Search for the command in the list
     var found = null;
+
     commandList.forEach(function(c) {
         if (c.getLabel() == command) found = c;
     });
     if (found != null) {
         // Command found
-        msg = "";
+        var argsStr = "";
         var args = found.getArgumentList();
         args.forEach(function(a) {
             var opt = "";
             if (a.optional) opt = "(Opcional) ";
-            msg += a.tag + " " + opt + "- " + a.desc + "\n";
+            argsStr += "`" + a.tag + "` " + opt + "- " + a.desc + "\n";
         });
-    }
+        if (argsStr === "") argsStr = "No hay argumentos disponibles para este comando.";
 
-    // Prepare embed output
-    var embedMsg = {
-        author: {
-            name: "Ayuda",
-            icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-        },
-        color: 3447003,
-        description: msg
-    };
+        // Prepare embed output
+        embedMsg = {
+            author: {
+                name: "Ayuda",
+                icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+            },
+            color: 3447003,
+            title: found.getLabel(), 
+             fields: [{
+                name: "Descripción",
+                value: found.getDesc()
+            },
+            {
+                name: "Argumentos",
+                value: argsStr
+            },
+            {
+                name: "Ejemplo",
+                value: "TODO"
+            }
+            ]
+        };
+    }
 
     return embedMsg;
 }

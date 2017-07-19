@@ -1,9 +1,9 @@
 var Bot = require("./bot.class.js");
 var botObj = new Bot();
-var msgs = require("./strings.js");
+//var msgs = require("../strings.js");
 var Command = require("./command.class.js");
-var resourceManager = require("./resourceManager.class.js");
-var resources = require("./resources.js");
+/*var resourceManager = require("./resourceManager.class.js");
+var resources = require("../resources.js");*/
 
 module.exports =
     class rueBot {
@@ -48,8 +48,8 @@ module.exports =
                     } else {
                         formatedMsg = msg;
                     };
-
-                    if (formatedMsg !== "") {
+                    // Filter both empty embed and normal messages
+                    if (Object.keys(formatedMsg).length > 0 || formatedMsg.length > 0) {
                         message.channel.send(formatedMsg)
                             .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
                             .catch(console.error);
@@ -136,7 +136,7 @@ module.exports =
             };
 
             return embedMsg;
-        }*/
+        }
 
         getRandomMemberQuote(fParams, args, callback) {
             var messages = msgs.memberQuotes;
@@ -178,9 +178,9 @@ module.exports =
                 // no args
             }
             return "";
-        }
+        }*/
 
-        getLogs(fParams, args, callback) {
+        /*getLogs(fParams, args, callback) {
             // Warcraft Logs api
             const api = require('weasel.js');
 
@@ -224,22 +224,22 @@ module.exports =
                 };
                 callback(embedMsg, true);
             });
-        }
+        }*/
 
         getCommandList() {
             var commands = [];
-            var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
-            commands.push(randomMemberQuote);
-            var playAudioArgs = [{
+            /*var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
+            commands.push(randomMemberQuote);*/
+            /*var playAudioArgs = [{
                 "tag": "recurso",
                 "desc": "Nombre del audio que reproducir",
                 "optional": false,
                 "order": 1
             }];
             var playAudio = new Command('audio', 'Reproduce un audio por tu canal de voz actual.', this.playSound, [], playAudioArgs);
-            commands.push(playAudio);
-            var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
-            commands.push(getLogs);
+            commands.push(playAudio);*/
+            /*var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
+            commands.push(getLogs);*/
             /*var help = new Command('ayuda1', 'Consulta la ayuda.', this.getHelp);
             commands.push(help);
             // Add the command list as a parameter of the getHelp function
