@@ -1,7 +1,7 @@
 // Requires section
-var Command = require("../../classes/command.class.js");
+var Command = require.main.require("./classes/command.class.js");
 var strings = require("./strings.js");
-var Bot = require("../../classes/bot.class.js");
+var Bot = require.main.require("./classes/bot.class.js");
 
 // Main code section
 function getRandomMemberQuote(fParams, args, callback) {

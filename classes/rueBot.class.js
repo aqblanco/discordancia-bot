@@ -9,7 +9,7 @@ module.exports =
     class rueBot {
 
         constructor(cmdPrefix) {
-            this.commands = this.getCommandList();
+            this.commands = [];
             this.cmdPrefix = cmdPrefix;
         }
 
@@ -226,30 +226,30 @@ module.exports =
             });
         }*/
 
-        getCommandList() {
-            var commands = [];
-            /*var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
-            commands.push(randomMemberQuote);*/
-            /*var playAudioArgs = [{
-                "tag": "recurso",
-                "desc": "Nombre del audio que reproducir",
-                "optional": false,
-                "order": 1
-            }];
-            var playAudio = new Command('audio', 'Reproduce un audio por tu canal de voz actual.', this.playSound, [], playAudioArgs);
-            commands.push(playAudio);*/
-            /*var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
-            commands.push(getLogs);*/
-            /*var help = new Command('ayuda1', 'Consulta la ayuda.', this.getHelp);
-            commands.push(help);
-            // Add the command list as a parameter of the getHelp function
-            commands.forEach(function(e) {
-                if (e.getLabel() == help.getLabel())
-                    e.addFParams(commands);
-            });*/
+        /*getCommandList() {
+            var commands = [];*/
+        /*var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
+        commands.push(randomMemberQuote);*/
+        /*var playAudioArgs = [{
+            "tag": "recurso",
+            "desc": "Nombre del audio que reproducir",
+            "optional": false,
+            "order": 1
+        }];
+        var playAudio = new Command('audio', 'Reproduce un audio por tu canal de voz actual.', this.playSound, [], playAudioArgs);
+        commands.push(playAudio);*/
+        /*var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
+        commands.push(getLogs);*/
+        /*var help = new Command('ayuda1', 'Consulta la ayuda.', this.getHelp);
+        commands.push(help);
+        // Add the command list as a parameter of the getHelp function
+        commands.forEach(function(e) {
+            if (e.getLabel() == help.getLabel())
+                e.addFParams(commands);
+        });*/
 
-            return commands;
-        }
+        /*return commands;
+        }*/
 
         addCommand(cmd) {
             this.commands.push(cmd);
