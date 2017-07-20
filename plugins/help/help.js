@@ -1,5 +1,5 @@
 // Requires section
-var Command = require("../../classes/command.class.js");
+var Command = require.main.require("./classes/command.class.js");
 
 // Main code section
 function getHelp(fParams, args, callback) {
@@ -43,7 +43,7 @@ function getWholeHelp(commandList) {
         color: 3447003,
         description: msg
     };
-console.log(embedMsg);
+    console.log(embedMsg);
     return embedMsg;
 }
 
@@ -76,19 +76,19 @@ function getCommandHelp(commandList, command) {
                 icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
             },
             color: 3447003,
-            title: found.getLabel(), 
-             fields: [{
-                name: "Descripción",
-                value: found.getDesc()
-            },
-            {
-                name: "Argumentos",
-                value: argsStr
-            },
-            {
-                name: "Ejemplo",
-                value: "TODO"
-            }
+            title: found.getLabel(),
+            fields: [{
+                    name: "Descripción",
+                    value: found.getDesc()
+                },
+                {
+                    name: "Argumentos",
+                    value: argsStr
+                },
+                {
+                    name: "Ejemplo",
+                    value: "TODO"
+                }
             ]
         };
     }

@@ -1,0 +1,17 @@
+{
+    "apiKeys": {
+        "discordAPIKey": "Your discord API key for the app (https://discordapp.com/developers/applications/me)",
+        "wLogsAPIKey": "Your WarCraft Logs API key"
+    },
+
+    "botConfig": {
+        "username": "Bot Username",
+        "cmdPrefix": "Commands prefix string, i.e. !bot"
+    },
+
+    "guildInfo": {
+        "guildName": "Your guild's name",
+        "guildRealm": "Your guild's realm (without spaces and other strange characters, as can be seen in the armory)",
+        "guildRegion": "Your guild's region code, i.e. eu"
+    }
+}

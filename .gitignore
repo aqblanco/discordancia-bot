@@ -61,3 +61,6 @@ typings/
 
 # Visual Studio Code folder
 .vscode
+
+# Local configuration file
+#config.json

@@ -1,9 +1,7 @@
-var resources = [
-                    {
-                        'name': 'pelele', 
-                        'file': 'junkrat-pelele.ogg'
-                    }
-                ];
+var resources = [{
+    'name': 'pelele',
+    'file': 'junkrat-pelele.ogg'
+}];
 
 
 // Exports section

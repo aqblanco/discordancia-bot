@@ -1,4 +1,4 @@
-module.exports = 
+module.exports =
     class resourceManager {
         constructor(basePath, resourceList = [{}]) {
             this.basePath = basePath;
@@ -7,6 +7,10 @@ module.exports =
 
         addResource(resource) {
             this.resourceList.push(resource);
+        }
+
+        addResourceList(resourceL) {
+            this.resourceList.push(resourceL);
         }
 
         getResourcePath(resourceName) {
@@ -21,5 +25,14 @@ module.exports =
             });
 
             return result;
+        }
+
+        getResourceList() {
+            var list = [];
+            this.resourceList.forEach(function(e) {
+                list.push(e.name);
+            });
+
+            return list;
         }
     }
