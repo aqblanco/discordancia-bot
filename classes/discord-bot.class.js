@@ -1,12 +1,7 @@
-var Bot = require("./bot.class.js");
-var botObj = new Bot();
-//var msgs = require("../strings.js");
 var Command = require("./command.class.js");
-/*var resourceManager = require("./resourceManager.class.js");
-var resources = require("../resources.js");*/
 
 module.exports =
-    class rueBot {
+    class discordBot {
 
         constructor(cmdPrefix) {
             this.commands = [];

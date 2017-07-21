@@ -1,5 +1,6 @@
 // Requires section
 var Command = require.main.require("./classes/command.class.js");
+const config = require.main.require("./config.json");
 
 // Main code section
 function getLogs(fParams, args, callback) {
@@ -7,7 +8,7 @@ function getLogs(fParams, args, callback) {
     const api = require('weasel.js');
 
     // Set the public WCL api-key that you get from https://www.warcraftlogs.com/accounts/changeuser 
-    api.setApiKey('56503c747edc90d3caffd50accab1237');
+    api.setApiKey(config.apiKeys.wLogsAPIKey);
 
     // Optional parameters for the api call. 
     var params = {};
@@ -26,7 +27,7 @@ function getLogs(fParams, args, callback) {
         logsObj.forEach(function(e) {
             var d = new Date(e.start);
             var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            var date = d.toLocaleString('es-ES', options);
+            var date = d.toLocaleString('en-GB', options);
             var info = [{
                 name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
                 value: "Log del **" + date + "** por **" + e.owner + "**"
@@ -40,7 +41,7 @@ function getLogs(fParams, args, callback) {
                 icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
             },
             color: 3447003,
-            title: "Rue del Percebe en WarCraft Logs",
+            title: config.guildInfo.guildName + " en WarCraft Logs",
             url: "https://www.warcraftlogs.com/guilds/154273",
             fields: logInfo,
         };
