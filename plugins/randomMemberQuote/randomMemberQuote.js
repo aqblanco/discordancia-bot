@@ -8,7 +8,7 @@ function getRandomMemberQuote(fParams, args, callback) {
     var getRandomStr = functions.getRandomStr;
     var messages = strings.memberQuotes;
     var msg = getRandomStr(messages);
-    callback(msg);
+    callback(null, msg);
 }
 
 var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue.', getRandomMemberQuote);

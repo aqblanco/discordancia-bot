@@ -32,12 +32,16 @@ function playSound(fParams, args, callback) {
                 })
                 .catch(console.log);
         } else {
-            message.reply('You need to join a voice channel first!');
+            // No voice channel
+            callback(new Error('You need to join a voice channel first!'));
+            return;
         }
     } else {
-        // no args
+        // No args
+        callback(new Error('No audio selected!'));
+        return;
     }
-    callback("");
+    callback(null, "");
 }
 
 var playAudioArgs = [{

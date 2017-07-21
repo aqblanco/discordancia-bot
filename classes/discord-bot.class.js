@@ -9,6 +9,9 @@ module.exports =
         }
 
         reply(message) {
+            var functions = require.main.require("./functions.js");
+            var formatError = functions.formatError;
+
             console.log("Comando recibido: " + message.content);
             // Process request string
             var reqArray = message.content.split(/\s+/g);
@@ -19,22 +22,23 @@ module.exports =
                 args = reqArray;
             }
 
-            /*if (request === 'ayuda') {
-                var command = "";
-                if (args.length > 0) command = args[0];
-                var embed = this.getHelp(this.getCommandList(), command);
-                console.log({ embed });
-                //var opt = { code: true };
-                message.channel.send({ embed })
-                    .then(m => console.log('Mensaje enviado: ' + JSON.stringify(embed)))
-                    .catch(console.error);
-            } else {*/
             var cmd = this.matchCommand(request);
             if (cmd != null) {
                 // Send the message object to the command
                 cmd.addFParams({ 'message': message });
 
-                cmd.execute(args, function(msg, isEmbed = false) {
+                cmd.execute(args, function(err, msg, isEmbed = false) {
+
+                    if (err) {
+                        console.log(err);
+                        // Beautify error message: TODO
+                        var embed = formatError(err.message);
+                        message.channel.send({ embed })
+                            .then(m => console.log('Mensaje enviado: ' + err))
+                            .catch(console.error);
+                        return;
+                    }
+
                     var formatedMsg;
                     // Correctly generate embed object if needed
                     if (isEmbed) {
@@ -52,199 +56,14 @@ module.exports =
                 });
             } else {
                 // Command is not valid
-                //TODO: Notify user (whisp?)
-                console.log("Comando no válido.");
+                var err = new Error("Comando no válido. Mencióname y escríbeme ayuda o escribe |rue ayuda para ver la lista de comandos disponibles.");
+                var embed = formatError(err.message);
+                message.channel.send({ embed })
+                    .then(m => console.log('Mensaje enviado: ' + err))
+                    .catch(console.error);
+                return;
             }
-            //}
         }
-
-        /*getHelp(commandList, command = "") {
-            //var prefix = this.cmdPrefix;
-
-            var embedMsg = null;
-            if (command === "") {
-                embedMsg = this.getWholeHelp(commandList);
-            } else {
-                embedMsg = this.getCommandHelp(commandList, command);
-            }
-
-            return embedMsg;
-        }
-
-        getWholeHelp(commandList) {
-            // Display the whole command list
-
-            var msg = "";
-
-            commandList.forEach(function(e) {
-                // Build argument string for the command signature
-                var argString = "";
-                e.getArgumentList().forEach(function(arg) {
-                    var tag = arg.tag;
-                    if (arg.optional) tag = "[" + tag + "]";
-                    argString += " *`" + tag + "`* ";
-                });
-                msg += "**`" + e.getLabel() + "`" + argString + "** - " + e.getDesc() + "\n";
-            })
-            msg += "**`ayuda`** - Consulta la ayuda.";
-
-            var embedMsg = {
-                author: {
-                    name: "Ayuda",
-                    icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-                },
-                color: 3447003,
-                description: msg
-            };
-
-            return embedMsg;
-        }
-
-        getCommandHelp(commandList, command) {
-            // Display desired command help
-
-            var msg = "";
-
-            // Search for the command in the list
-            var found = null;
-            commandList.forEach(function(c) {
-                if (c.getLabel() == command) found = c;
-            });
-            if (found != null) {
-                // Command found
-                msg = "";
-                var args = found.getArgumentList();
-                args.forEach(function(a) {
-                    var opt = "";
-                    if (a.optional) opt = "(Opcional) ";
-                    msg += a.tag + " " + opt + "- " + a.desc + "\n";
-                });
-            }
-
-            var embedMsg = {
-                author: {
-                    name: "Ayuda",
-                    icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-                },
-                color: 3447003,
-                description: msg
-            };
-
-            return embedMsg;
-        }
-
-        getRandomMemberQuote(fParams, args, callback) {
-            var messages = msgs.memberQuotes;
-            var msg = botObj.getRandomStr(messages);
-            callback(msg);
-        }
-
-        playSound(fParams, args) {
-            var message = fParams.message;
-            if (args.length > 0) {
-                // Only try to join the sender's voice channel if they are in one themselves
-                if (message.member.voiceChannel) {
-                    message.member.voiceChannel.join()
-                        .then(connection => { // Connection is an instance of VoiceConnection
-                            //message.reply('I have successfully connected to the channel!');
-                            var file = "";
-                            var rName = args[0];
-                            var path = require('path').dirname(require.main.filename);
-                            //var resources = [{'name': 'pelele', 'file': 'junkrat-pelele.ogg'}];
-                            var rM = new resourceManager(path + '/assets/audio/', resources);
-                            file = rM.getResourcePath(rName);
-                            console.log("Reproduciendo archivo: " + file);
-                            // file not empty check
-                            const dispatcher = connection.playFile(file);
-                            dispatcher.on('end', () => {
-                                dispatcher.end();
-                            });
-                            dispatcher.on('error', e => {
-                                // Catch any errors that may arise
-                                console.log(e);
-                            });
-
-                        })
-                        .catch(console.log);
-                } else {
-                    message.reply('You need to join a voice channel first!');
-                }
-            } else {
-                // no args
-            }
-            return "";
-        }*/
-
-        /*getLogs(fParams, args, callback) {
-            // Warcraft Logs api
-            const api = require('weasel.js');
-
-            // Set the public WCL api-key that you get from https://www.warcraftlogs.com/accounts/changeuser 
-            api.setApiKey('56503c747edc90d3caffd50accab1237');
-
-            // Optional parameters for the api call. 
-            var params = {};
-
-            // Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
-            api.getReportsGuild('Rue del Percebe', 'cthun', 'eu', params, function(err, data) {
-                if (err) {
-                    //We caught an error, log the error object to the console and exit. 
-                    console.log(err);
-                    return;
-                }
-                // Success, log the whole data object to the console. 
-                var lastN = 5;
-                var logsObj = data.slice(-lastN);
-                var logInfo = [];
-                logsObj.forEach(function(e) {
-                    var d = new Date(e.start);
-                    var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                    var date = d.toLocaleString('es-ES', options);
-                    var info = [{
-                        name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
-                        value: "Log del **" + date + "** por **" + e.owner + "**"
-                    }];
-                    logInfo = logInfo.concat(info);
-                })
-
-                var embedMsg = {
-                    author: {
-                        name: "WarCraft Logs",
-                        icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-                    },
-                    color: 3447003,
-                    title: "Rue del Percebe en WarCraft Logs",
-                    url: "https://www.warcraftlogs.com/guilds/154273",
-                    fields: logInfo,
-                };
-                callback(embedMsg, true);
-            });
-        }*/
-
-        /*getCommandList() {
-            var commands = [];*/
-        /*var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue', this.getRandomMemberQuote);
-        commands.push(randomMemberQuote);*/
-        /*var playAudioArgs = [{
-            "tag": "recurso",
-            "desc": "Nombre del audio que reproducir",
-            "optional": false,
-            "order": 1
-        }];
-        var playAudio = new Command('audio', 'Reproduce un audio por tu canal de voz actual.', this.playSound, [], playAudioArgs);
-        commands.push(playAudio);*/
-        /*var getLogs = new Command('logs', 'Obtiene la lista de logs', this.getLogs);
-        commands.push(getLogs);*/
-        /*var help = new Command('ayuda1', 'Consulta la ayuda.', this.getHelp);
-        commands.push(help);
-        // Add the command list as a parameter of the getHelp function
-        commands.forEach(function(e) {
-            if (e.getLabel() == help.getLabel())
-                e.addFParams(commands);
-        });*/
-
-        /*return commands;
-        }*/
 
         addCommand(cmd) {
             this.commands.push(cmd);
