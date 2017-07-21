@@ -12,12 +12,11 @@ function getLogs(fParams, args, callback) {
 
     // Optional parameters for the api call. 
     var params = {};
-
     // Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
-    api.getReportsGuild('Rue del Percebe', 'cthun', 'eu', params, function(err, data) {
+    api.getReportsGuild(config.guildInfo.guildName, config.guildInfo.guildRealm, config.guildInfo.guildRegion, params, function(err, data) {
         if (err) {
-            //We caught an error, log the error object to the console and exit. 
-            console.log(err);
+            //We caught an error, send it to the callback function. 
+            callback(err);
             return;
         }
         // Success, log the whole data object to the console. 
@@ -45,7 +44,7 @@ function getLogs(fParams, args, callback) {
             url: "https://www.warcraftlogs.com/guilds/154273",
             fields: logInfo,
         };
-        callback(embedMsg, true);
+        callback(null, embedMsg, true);
     });
 }
 

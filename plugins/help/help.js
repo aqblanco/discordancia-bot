@@ -8,19 +8,26 @@ function getHelp(fParams, args, callback) {
     var command = args.length == 0 ? "" : args[0];
 
     // empty check for command, else take first element
-    var embedMsg = null;
+    var res = null;
+
     if (command == "") {
-        embedMsg = getWholeHelp(commandList);
+        res = getWholeHelp(commandList);
     } else {
-        embedMsg = getCommandHelp(commandList, command);
+        res = getCommandHelp(commandList, command);
     }
 
-    callback(embedMsg, true);
+    if (res.err != null) {
+        callback(res.err);
+        return;
+    }
+
+    callback(null, res.embedMsg, true);
 }
 
 function getWholeHelp(commandList) {
     // Display the whole command list
 
+    var res = { "err": null, msg: "" }
     var msg = "";
 
     commandList.forEach(function(e) {
@@ -43,13 +50,15 @@ function getWholeHelp(commandList) {
         color: 3447003,
         description: msg
     };
-    console.log(embedMsg);
-    return embedMsg;
+    res.embedMsg = embedMsg;
+
+    return res;
 }
 
-function getCommandHelp(commandList, command) {
+function getCommandHelp(commandList, command, callback) {
     // Display desired command help
 
+    var res = { "err": null, msg: "" }
     var embedMsg = {};
 
     // Search for the command in the list
@@ -91,9 +100,14 @@ function getCommandHelp(commandList, command) {
                 }
             ]
         };
+
+        res.embedMsg = embedMsg;
+    } else {
+        // Command not found
+        res.err = new Error("Command `" + command + "` not found!");
     }
 
-    return embedMsg;
+    return res;
 }
 
 var helpArgs = [{

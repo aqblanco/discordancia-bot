@@ -23,3 +23,13 @@ module.exports.getPath = function(folder = "systemRoot") {
 
     return (path);
 }
+
+module.exports.formatError = function(msg) {
+    const Discord = require("discord.js");
+    const embed = new Discord.RichEmbed()
+        .setAuthor("Error", "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png")
+        .setColor("#b71c1c")
+        .setDescription(msg)
+
+    return embed;
+}
