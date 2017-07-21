@@ -1,19 +1,19 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-var rueBot = require("./classes/rueBot.class.js");
+var Bot = require("./classes/discord-bot.class.js");
 const config = require("./config.json");
 
 
 const token = config.apiKeys.discordAPIKey;
 const cmdPrefix = config.botConfig.cmdPrefix;
-var rueBotObj = new rueBot(cmdPrefix);
+var botObj = new Bot(cmdPrefix);
 
 // The ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted
 client.on('ready', () => {
     client.user.setUsername(config.botConfig.username);
     client.user.setGame('Ayuda: ' + cmdPrefix + ' ayuda');
-    addCommands(rueBotObj);
+    addCommands(botObj);
     console.log('Bot inicializado correctamente...\n');
 });
 
@@ -42,7 +42,7 @@ client.on('message', message => {
         tempA.splice(0, 1); // Prefix item
         message.content = tempA.join(" "); // Redo string
 
-        rueBotObj.reply(message);
+        botObj.reply(message);
     }
 });
 

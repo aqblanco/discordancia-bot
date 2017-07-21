@@ -1,13 +1,13 @@
 // Requires section
 var Command = require.main.require("./classes/command.class.js");
 var strings = require("./strings.js");
-var Bot = require.main.require("./classes/bot.class.js");
+var functions = require.main.require("./functions.js");
 
 // Main code section
 function getRandomMemberQuote(fParams, args, callback) {
-    var botObj = new Bot();
+    var getRandomStr = functions.getRandomStr;
     var messages = strings.memberQuotes;
-    var msg = botObj.getRandomStr(messages);
+    var msg = getRandomStr(messages);
     callback(msg);
 }
 

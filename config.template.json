@@ -1,7 +1,7 @@
 {
     "apiKeys": {
         "discordAPIKey": "Your discord API key for the app (https://discordapp.com/developers/applications/me)",
-        "wLogsAPIKey": "Your WarCraft Logs API key"
+        "wLogsAPIKey": "Your WarCraft Logs API key from https://www.warcraftlogs.com/accounts/changeuser"
     },
 
     "botConfig": {
