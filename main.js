@@ -46,6 +46,15 @@ client.on('message', message => {
     }
 });
 
+client.on('presenceUpdate', (oldStatus, newStatus) => {
+    if(oldStatus.frozenPresence.status === 'offline') {
+        console.log(`${oldStatus.user.username} se ha conectado.`);
+        oldStatus.user.send("Bienvenido!");
+    } else if(oldStatus.frozenPresence.status === 'online') {
+        console.log(`${oldStatus.user.username} se ha desconectado.`);
+    }
+});
+
 // Log our bot in
 client.login(token);
 
