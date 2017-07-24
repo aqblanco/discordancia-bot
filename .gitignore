@@ -64,3 +64,6 @@ typings/
 
 # Local configuration file
 #config.json
+
+# Persistance directory
+data/

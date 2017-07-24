@@ -10,7 +10,7 @@ var botObj = new Bot(cmdPrefix);
 
 // The ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted
-client.on('ready', () => {
+client.on('ready', function() {
     client.user.setUsername(config.botConfig.username);
     client.user.setGame('Ayuda: ' + cmdPrefix + ' ayuda');
     addCommands(botObj);
@@ -18,7 +18,7 @@ client.on('ready', () => {
 });
 
 // Create an event listener for new guild members
-client.on('guildMemberAdd', member => {
+client.on('guildMemberAdd', function(member) {
     // Send the message to the guilds default channel (usually #general), mentioning the member
     member.guild.defaultChannel.send(`Welcome to the server, ${member}!`);
 
@@ -32,7 +32,7 @@ client.on('guildMemberAdd', member => {
 });
 
 // Create an event listener for messages
-client.on('message', message => {
+client.on('message', function(message) {
     var botUser = client.user.username;
     var firstEle = message.content.split(/\s+/g)[0];
 
@@ -46,12 +46,35 @@ client.on('message', message => {
     }
 });
 
-client.on('presenceUpdate', (oldStatus, newStatus) => {
-    if(oldStatus.frozenPresence.status === 'offline') {
-        console.log(`${oldStatus.user.username} se ha conectado.`);
-        oldStatus.user.send("Bienvenido!");
-    } else if(oldStatus.frozenPresence.status === 'online') {
-        console.log(`${oldStatus.user.username} se ha desconectado.`);
+const PersistentCollection = require('djs-collection-persistent');
+const connectionsTable = new PersistentCollection({ name: "connections" });
+
+client.on('presenceUpdate', function(oldStatus, newStatus) {
+    if (oldStatus.frozenPresence.status === 'offline') {
+        const currentDate = new Date();
+        // Get las connection from persistance
+        var lastConnection = connectionsTable.get(newStatus.user.id);
+        // Fix for first connection
+        lastConnection = typeof lastConnection === 'undefined' ? currentDate.getTime() : lastConnection;
+        var lastConDate = new Date(lastConnection);
+        // Update last connection time to current one
+        connectionsTable.set(newStatus.user.id, currentDate.getTime());
+        console.log(`${newStatus.user.username} se ha conectado.`);
+
+        // Check that last connection wasn't today or MotD changed since last connection in order to show it
+        var sameDay = lastConDate.getDate() == currentDate.getDate();
+        var sameMonth = lastConDate.getMonth() == currentDate.getMonth();
+        var sameYear = lastConDate.getYear() == currentDate.getYear();
+        //if (!sameDay) {
+        //if (!sameMonth)
+        newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
+        newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);
+        console.log("Mensaje diario.");
+        //}
+        //newStatus.user.send("Bienvenido!");
+    }
+    if (oldStatus.frozenPresence.status === 'online') {
+        console.log(`${newStatus.user.username} se ha desconectado.`);
     }
 });
 
