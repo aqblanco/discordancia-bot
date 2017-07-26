@@ -1,5 +1,5 @@
 module.exports =
-    class resourceManager {
+    class ResourceManager {
         constructor(basePath, resourceList = [{}]) {
             this.basePath = basePath;
             this.resourceList = resourceList;

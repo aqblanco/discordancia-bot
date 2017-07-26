@@ -1,4 +1,5 @@
 // Requires section
+var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 const config = require.main.require("./config.json");
 
@@ -48,7 +49,14 @@ function getLogs(fParams, args, callback) {
     });
 }
 
-var getLogs = new Command('logs', 'Obtiene los últimos logs de Warcraft Logs', getLogs);
+
+var commands = [];
+var eventHandlers = [];
+
+var getLogsCmd = new Command('logs', 'Obtiene los últimos logs de Warcraft Logs', getLogs);
+commands.push(getLogsCmd);
+
+var getLogs = new Plugin(commands, eventHandlers);
 
 
 // Exports section
