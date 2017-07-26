@@ -27,7 +27,7 @@ module.exports =
                 // Send the message object to the command
                 cmd.addFParams({ 'message': message });
                 // Show "processing" message while retrieving data
-                message.channel.send("Procesando...")
+                message.channel.send("**Procesando...**")
                     .then(processingMsg =>
                         cmd.execute(args, function(err, msg, isEmbed = false) {
 
@@ -51,8 +51,8 @@ module.exports =
                             // Filter both empty embed and normal messages
                             if (Object.keys(formatedMsg).length > 0 || formatedMsg.length > 0) {
                                 //Delete "processing" message
-                                processingMsg.delete();
-                                message.channel.send(formatedMsg)
+                                processingMsg.edit(formatedMsg)
+                                //message.channel.send(formatedMsg)
                                     .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
                                     .catch(console.error);
                             }
