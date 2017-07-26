@@ -63,7 +63,7 @@ typings/
 .vscode
 
 # Local configuration file
-#config.json
+config.json
 
 # Persistance directory
 data/
