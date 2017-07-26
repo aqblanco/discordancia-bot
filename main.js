@@ -13,7 +13,7 @@ var botObj = new Bot(cmdPrefix);
 client.on('ready', function() {
     client.user.setUsername(config.botConfig.username);
     client.user.setGame('Ayuda: ' + cmdPrefix + ' ayuda');
-    addCommands(botObj);
+    loadPlugins(botObj, client);
     console.log('Bot inicializado correctamente...\n');
 });
 
@@ -49,7 +49,7 @@ client.on('message', function(message) {
 const PersistentCollection = require('djs-collection-persistent');
 const connectionsTable = new PersistentCollection({ name: "connections" });
 
-client.on('presenceUpdate', function(oldStatus, newStatus) {
+/*client.on('presenceUpdate', function(oldStatus, newStatus) {
     if (oldStatus.frozenPresence.status === 'offline') {
         const currentDate = new Date();
         // Get las connection from persistance
@@ -61,29 +61,34 @@ client.on('presenceUpdate', function(oldStatus, newStatus) {
         connectionsTable.set(newStatus.user.id, currentDate.getTime());
         console.log(`${newStatus.user.username} se ha conectado.`);
 
+        //var motd = 
+
         // Check that last connection wasn't today or MotD changed since last connection in order to show it
         var sameDay = lastConDate.getDate() == currentDate.getDate();
         var sameMonth = lastConDate.getMonth() == currentDate.getMonth();
         var sameYear = lastConDate.getYear() == currentDate.getYear();
+        var motdChanged = true;//motd.modifiedDate < currentDate.getTime();
         //if (!sameDay) {
         //if (!sameMonth)
-        /*newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
-        newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);*/
-        console.log("Mensaje diario.");
+        //if (!sameDay || !sameMonth || !sameYear || motdChanged) {
+            //newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
+            //newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);
+            //console.log("Mensaje diario.");
+        //}
         //}
         //newStatus.user.send("Bienvenido!");
     }
     if (oldStatus.frozenPresence.status === 'online') {
         console.log(`${newStatus.user.username} se ha desconectado.`);
     }
-});
+});*/
 
 // Log our bot in
 client.login(token);
 
-function addCommands(bot) {
-    var commands = [];
+function loadPlugins(bot, client) {
     var plugins = [];
+    var commands = []; // Used by the help plugin
 
     // Random Member Quote
     plugins.push(require("./plugins/randomMemberQuote/randomMemberQuote.js"));
@@ -91,10 +96,16 @@ function addCommands(bot) {
     plugins.push(require("./plugins/playAudio/playAudio.js"));
     // Get Logs
     plugins.push(require("./plugins/getLogs/getLogs.js"));
+    // Connection Alerts
+    plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
 
     plugins.forEach(function(p) {
         commands = commands.concat(p.getCommands());
+
         bot.addCommands(p.getCommands());
+        p.getEventHandlers().forEach(function(handler) {
+            handler.bind(client);
+        });
     });
 
     // Help
@@ -111,10 +122,3 @@ function addCommands(bot) {
 
     bot.addCommand(help);
 }
-
-var EventHandler = require("./classes/event-handler.class.js");
-var handler = new EventHandler("presenceUpdate", function() {
-    console.log("Event binded");
-});
-
-handler.bind(client);
