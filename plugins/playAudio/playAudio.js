@@ -1,9 +1,10 @@
 // Requires section
+var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
-var resourceManager = require.main.require("./classes/resourceManager.class.js");
+var ResourceManager = require.main.require("./classes/resource-manager.class.js");
 var resources = require.main.require("./resources.js");
 
-var rm = new resourceManager(require('path').dirname(require.main.filename) + '/assets/audio/', resources);
+var rm = new ResourceManager(require('path').dirname(require.main.filename) + '/assets/audio/', resources);
 
 // Main code section
 function playSound(fParams, args, callback) {
@@ -51,7 +52,14 @@ var playAudioArgs = [{
     "order": 1
 }];
 
-var playAudio = new Command('audio', 'Reproduce el audio indicado por tu canal de voz actual.', playSound, [], playAudioArgs);;
+
+var commands = [];
+var eventHandlers = [];
+
+var playAudioCmd = new Command('audio', 'Reproduce el audio indicado por tu canal de voz actual.', playSound, [], playAudioArgs);
+commands.push(playAudioCmd);
+
+var playAudio = new Plugin(commands, eventHandlers);
 
 
 // Exports section

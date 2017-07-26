@@ -8,7 +8,7 @@
     "djs-collection-persistent": "^0.1.3",
     "ffmpeg-binaries": "^3.2.2-3",
     "opusscript": "0.0.3",
-    "weasel.js": "~1.0.0"
+    "weasel.js": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,4 +1,5 @@
 // Requires section
+var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 var strings = require("./strings.js");
 var functions = require.main.require("./functions.js");
@@ -11,7 +12,14 @@ function getRandomMemberQuote(fParams, args, callback) {
     callback(null, msg);
 }
 
-var randomMemberQuote = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue.', getRandomMemberQuote);
+
+var commands = [];
+var eventHandlers = [];
+
+var randomMemberQuoteCmd = new Command('frase', 'Envia una frase aleatoria de los miembros de Rue.', getRandomMemberQuote);
+commands.push(randomMemberQuoteCmd);
+
+var randomMemberQuote = new Plugin(commands, eventHandlers);
 
 
 // Exports section

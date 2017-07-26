@@ -67,8 +67,8 @@ client.on('presenceUpdate', function(oldStatus, newStatus) {
         var sameYear = lastConDate.getYear() == currentDate.getYear();
         //if (!sameDay) {
         //if (!sameMonth)
-        newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
-        newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);
+        /*newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
+        newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);*/
         console.log("Mensaje diario.");
         //}
         //newStatus.user.send("Bienvenido!");
@@ -83,21 +83,19 @@ client.login(token);
 
 function addCommands(bot) {
     var commands = [];
+    var plugins = [];
 
     // Random Member Quote
-    var randomMemberQuote = require("./plugins/randomMemberQuote/randomMemberQuote.js");
-    commands.push(randomMemberQuote);
-    bot.addCommand(randomMemberQuote);
-
+    plugins.push(require("./plugins/randomMemberQuote/randomMemberQuote.js"));
     // Play Audio
-    var playAudio = require("./plugins/playAudio/playAudio.js");
-    commands.push(playAudio);
-    bot.addCommand(playAudio);
-
+    plugins.push(require("./plugins/playAudio/playAudio.js"));
     // Get Logs
-    var getLogs = require("./plugins/getLogs/getLogs.js");
-    commands.push(getLogs);
-    bot.addCommand(getLogs);
+    plugins.push(require("./plugins/getLogs/getLogs.js"));
+
+    plugins.forEach(function(p) {
+        commands = commands.concat(p.getCommands());
+        bot.addCommands(p.getCommands());
+    });
 
     // Help
     var help = require("./plugins/help/help.js");
@@ -113,3 +111,10 @@ function addCommands(bot) {
 
     bot.addCommand(help);
 }
+
+var EventHandler = require("./classes/event-handler.class.js");
+var handler = new EventHandler("presenceUpdate", function() {
+    console.log("Event binded");
+});
+
+handler.bind(client);

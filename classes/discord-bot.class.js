@@ -1,7 +1,7 @@
 var Command = require("./command.class.js");
 
 module.exports =
-    class discordBot {
+    class DiscordBot {
 
         constructor(cmdPrefix) {
             this.commands = [];
@@ -26,37 +26,40 @@ module.exports =
             if (cmd != null) {
                 // Send the message object to the command
                 cmd.addFParams({ 'message': message });
+                // Show "processing" message while retrieving data
+                message.channel.send("Procesando...")
+                    .then(processingMsg =>
+                        cmd.execute(args, function(err, msg, isEmbed = false) {
 
-                cmd.execute(args, function(err, msg, isEmbed = false) {
+                            if (err) {
+                                console.log(err);
+                                var embed = formatError(err.message);
+                                message.channel.send({ embed })
+                                    .then(m => console.log('Mensaje enviado: ' + err))
+                                    .catch(console.error);
+                                return;
+                            }
 
-                    if (err) {
-                        console.log(err);
-                        // Beautify error message: TODO
-                        var embed = formatError(err.message);
-                        message.channel.send({ embed })
-                            .then(m => console.log('Mensaje enviado: ' + err))
-                            .catch(console.error);
-                        return;
-                    }
-
-                    var formatedMsg;
-                    // Correctly generate embed object if needed
-                    if (isEmbed) {
-                        var embed = msg;
-                        formatedMsg = { embed };
-                    } else {
-                        formatedMsg = msg;
-                    };
-                    // Filter both empty embed and normal messages
-                    if (Object.keys(formatedMsg).length > 0 || formatedMsg.length > 0) {
-                        message.channel.send(formatedMsg)
-                            .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
-                            .catch(console.error);
-                    }
-                });
+                            var formatedMsg;
+                            // Correctly generate embed object if needed
+                            if (isEmbed) {
+                                var embed = msg;
+                                formatedMsg = { embed };
+                            } else {
+                                formatedMsg = msg;
+                            };
+                            // Filter both empty embed and normal messages
+                            if (Object.keys(formatedMsg).length > 0 || formatedMsg.length > 0) {
+                                //Delete "processing" message
+                                processingMsg.delete();
+                                message.channel.send(formatedMsg)
+                                    .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
+                                    .catch(console.error);
+                            }
+                        }));
             } else {
                 // Command is not valid
-                var err = new Error("Comando no válido. Mencióname y escríbeme ayuda o escribe |rue ayuda para ver la lista de comandos disponibles.");
+                var err = new Error("Comando no válido. Mencióname e introduce la palabra ayuda o escribe |rue ayuda para ver la lista de comandos disponibles.");
                 var embed = formatError(err.message);
                 message.channel.send({ embed })
                     .then(m => console.log('Mensaje enviado: ' + err))
@@ -67,6 +70,10 @@ module.exports =
 
         addCommand(cmd) {
             this.commands.push(cmd);
+        }
+
+        addCommands(cmdList) {
+            this.commands = this.commands.concat(cmdList);
         }
 
         matchCommand(cmd) {
