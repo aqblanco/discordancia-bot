@@ -46,43 +46,6 @@ client.on('message', function(message) {
     }
 });
 
-const PersistentCollection = require('djs-collection-persistent');
-const connectionsTable = new PersistentCollection({ name: "connections" });
-
-/*client.on('presenceUpdate', function(oldStatus, newStatus) {
-    if (oldStatus.frozenPresence.status === 'offline') {
-        const currentDate = new Date();
-        // Get las connection from persistance
-        var lastConnection = connectionsTable.get(newStatus.user.id);
-        // Fix for first connection
-        lastConnection = typeof lastConnection === 'undefined' ? currentDate.getTime() : lastConnection;
-        var lastConDate = new Date(lastConnection);
-        // Update last connection time to current one
-        connectionsTable.set(newStatus.user.id, currentDate.getTime());
-        console.log(`${newStatus.user.username} se ha conectado.`);
-
-        //var motd = 
-
-        // Check that last connection wasn't today or MotD changed since last connection in order to show it
-        var sameDay = lastConDate.getDate() == currentDate.getDate();
-        var sameMonth = lastConDate.getMonth() == currentDate.getMonth();
-        var sameYear = lastConDate.getYear() == currentDate.getYear();
-        var motdChanged = true;//motd.modifiedDate < currentDate.getTime();
-        //if (!sameDay) {
-        //if (!sameMonth)
-        //if (!sameDay || !sameMonth || !sameYear || motdChanged) {
-            //newStatus.user.send(`Bienvenido al servidor ${newStatus.guild.name}!. Disfruta de tu estancia.`);
-            //newStatus.user.send(`***Mensaje del día***: Esto es un placeholder dónde irá el mensaje diario.`);
-            //console.log("Mensaje diario.");
-        //}
-        //}
-        //newStatus.user.send("Bienvenido!");
-    }
-    if (oldStatus.frozenPresence.status === 'online') {
-        console.log(`${newStatus.user.username} se ha desconectado.`);
-    }
-});*/
-
 // Log our bot in
 client.login(token);
 
@@ -96,8 +59,10 @@ function loadPlugins(bot, client) {
     plugins.push(require("./plugins/playAudio/playAudio.js"));
     // Get Logs
     plugins.push(require("./plugins/getLogs/getLogs.js"));
-    // Connection Alerts
-    plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
+    // Connection Alerts (Needs redo, alerts for voice channel connections)
+    //plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
+    // Server MotD
+    plugins.push(require("./plugins/serverMotD/serverMotD.js"));
 
     plugins.forEach(function(p) {
         commands = commands.concat(p.getCommands());
