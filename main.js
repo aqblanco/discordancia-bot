@@ -37,7 +37,7 @@ client.on('message', function(message) {
     var botUser = client.user.username;
     var firstEle = message.content.split(/\s+/g)[0];
 
-    if (firstEle === cmdPrefix || message.mentions.users.find("username", botUser) !== null) {
+    if (firstEle.toLowerCase() === cmdPrefix.toLowerCase() || message.mentions.users.find("username", botUser) !== null) {
         // Cut the prefix or bot mention from the message
         var tempA = message.content.split(/\s+/g);
         tempA.splice(0, 1); // Prefix item

@@ -2,12 +2,9 @@
 var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 var ResourceManager = require.main.require("./classes/resource-manager.class.js");
-var resources = require.main.require("./resources.js"); <<
-<< << < HEAD
+var resources = require.main.require("./resources.js"); 
 var functions = require.main.require("./functions.js");
-var i18n = functions.i18n; ===
-=== = >>>
->>> > 302388 ab0a731811393817ffdae4cc69e9994222
+var i18n = functions.i18n;
 
 var rm = new ResourceManager(require('path').dirname(require.main.filename) + '/assets/audio/', resources);
 
