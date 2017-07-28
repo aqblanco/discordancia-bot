@@ -5,7 +5,6 @@ var functions = require("./functions.js");
 const config = require("./config.json");
 var i18n = functions.i18n;
 
-
 const token = config.apiKeys.discordAPIKey;
 const cmdPrefix = config.botConfig.cmdPrefix;
 var botObj = new Bot(cmdPrefix);
