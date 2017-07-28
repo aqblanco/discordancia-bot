@@ -8,21 +8,21 @@ module.exports =
          * @param {string} label - The string used to identify and call the command.
          * @param {string} desc - What does the command do.
          * @param {function} f - Function to be executed when the command is called.
-         * @param {any[]} [fParams=[]] - Parameter used by the function f (Optional).
+         * @param {boolean} [cmdLevel=0] - Is this command only avaliable to everyone (0), bot's manager group and admins (1) or admin users (2)
+         * @param {any[]} [fParams=[]] - Parameters used by the function f (Optional).
          * @param {Object[]} argumentList - Arguments that the command may accept (Optional).
          * @param {string} argumentList.tag - String used to identify the command.
          * @param {string} argumentList.desc - What is that argument for.
          * @param {boolean} argumentList.optional - Is the argument optional.
-         * @param {integer} argumentList.order - Position in the command.
          */
-        constructor(label, desc, f, fParams = [], argumentList = []) {
+        constructor(label, desc, f, cmdLevel = 0, fParams = [], argumentList = []) {
             this.label = label;
             this.desc = desc;
             this.f = f;
+            this.cmdLevel = cmdLevel;
             //this.displayOptions = displayOptions;
             this.fParams = fParams;
             this.argumentList = argumentList;
-            // Check no repeated order position
         }
 
         getLabel() {
@@ -34,8 +34,34 @@ module.exports =
         }
 
         getArgumentList() {
-            //TODO: Ordenar por order
             return this.argumentList;
+        }
+
+        /**
+         * @deprecated 
+         */
+        isAdminOnly() {
+            return this.cmdLevel;
+        }
+
+        userCanExecute(user) {
+            var res = false;
+            var isAdmin = user.hasPermission("ADMINISTRATOR");
+            var isBotManager = false; //TODO: Check group
+
+            switch (this.cmdLevel) {
+                case 2:
+                    res = isAdmin;
+                    break;
+                case 1:
+                    res = isBotManager || isAdmin;
+                    break;
+                case 0:
+                default:
+                    res = true;
+            }
+
+            return res;
         }
 
         addFParams(newParams) {

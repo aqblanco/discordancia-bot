@@ -48,15 +48,14 @@ function playSound(fParams, args, callback) {
 var playAudioArgs = [{
     "tag": "recurso",
     "desc": "Nombre del audio que reproducir.\n\n\t**Valores posibles:**\n\t\t`" + rm.getResourceList().join("`\n\t\t`") + "`",
-    "optional": false,
-    "order": 1
+    "optional": false
 }];
 
 
 var commands = [];
 var eventHandlers = [];
 
-var playAudioCmd = new Command('audio', 'Reproduce el audio indicado por tu canal de voz actual.', playSound, [], playAudioArgs);
+var playAudioCmd = new Command('audio', 'Reproduce el audio indicado por tu canal de voz actual.', playSound, 0, [], playAudioArgs);
 commands.push(playAudioCmd);
 
 var playAudio = new Plugin(commands, eventHandlers);

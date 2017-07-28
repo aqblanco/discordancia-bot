@@ -1,14 +1,12 @@
 var Plugin = require.main.require("./classes/plugin.class.js");
 var EventHandler = require.main.require("./classes/event-handler.class.js");
 
-function connectionAlert(oldStatus, newStatus) {
-    //console.log(oldStatus.frozenPresence.status);
-    console.log(newStatus);
-    if (oldStatus.frozenPresence.status === 'offline') {
-        console.log(`${newStatus.user.username} se ha conectado.`);
+function connectionAlert(oldMember, newMember) {
+    if (oldMember.frozenPresence.status === 'offline') {
+        console.log(`${newMember.user.username} se ha conectado.`);
     }
-    if (oldStatus.frozenPresence.status === 'online') {
-        console.log(`${newStatus.user.username} se ha desconectado.`);
+    if (oldMember.frozenPresence.status === 'online') {
+        console.log(`${newMember.user.username} se ha desconectado.`);
     }
 }
 

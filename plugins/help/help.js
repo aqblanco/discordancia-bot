@@ -6,12 +6,13 @@ function getHelp(fParams, args, callback) {
     var prefix = fParams['cmdPrefix'];
     var commandList = fParams['commands'];
     var command = args.length == 0 ? "" : args[0];
+    var message = fParams.message;
 
     // empty check for command, else take first element
     var res = null;
 
     if (command == "") {
-        res = getWholeHelp(commandList);
+        res = getWholeHelp(commandList, message.member);
     } else {
         res = getCommandHelp(commandList, command);
     }
@@ -24,21 +25,23 @@ function getHelp(fParams, args, callback) {
     callback(null, res.embedMsg, true);
 }
 
-function getWholeHelp(commandList) {
+function getWholeHelp(commandList, requester) {
     // Display the whole command list
 
     var res = { "err": null, msg: "" }
     var msg = "";
 
     commandList.forEach(function(e) {
-        // Build argument string for the command signature
-        var argString = "";
-        e.getArgumentList().forEach(function(arg) {
-            var tag = arg.tag;
-            if (arg.optional) tag = "[" + tag + "]";
-            argString += " *`" + tag + "`* ";
-        });
-        msg += "**`" + e.getLabel() + "`" + argString + "** - " + e.getDesc() + "\n";
+        if (e.userCanExecute(requester)) {
+            // Build argument string for the command signature
+            var argString = "";
+            e.getArgumentList().forEach(function(arg) {
+                var tag = arg.tag;
+                if (arg.optional) tag = "[" + tag + "]";
+                argString += " *`" + tag + "`* ";
+            });
+            msg += "**`" + e.getLabel() + "`" + argString + "** - " + e.getDesc() + "\n";
+        }
     })
 
     // Prepare embed output
@@ -117,7 +120,7 @@ var helpArgs = [{
     "order": 1
 }];
 
-var help = new Command('ayuda', 'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.', getHelp, [], helpArgs);
+var help = new Command('ayuda', 'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.', getHelp, 0, [], helpArgs);
 
 
 // Exports section
