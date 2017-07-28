@@ -56,6 +56,8 @@ module.exports =
                                         //message.channel.send(formatedMsg)
                                         .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
                                         .catch(console.error);
+                                } else {
+                                    processingMsg.delete();
                                 }
                             }));
                 } else {

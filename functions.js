@@ -33,3 +33,15 @@ module.exports.formatError = function(msg) {
 
     return embed;
 }
+
+// Initialize internacionalization support
+var i18n = require("i18n");
+
+i18n.configure({
+    locales: ['en', 'es'],
+    defaultLocale: 'es',
+    directory: module.exports.getPath() + '/locales',
+    objectNotation: true
+});
+
+module.exports.i18n = i18n;

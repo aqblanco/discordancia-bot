@@ -1,0 +1,13 @@
+{
+    "botStarted": "Bot inicializado correctamente...\n",
+    "plugin": {
+        "randomMemberQuote": {
+            "desc": "Envia una frase aleatoria de los miembros de Rue."
+        },
+        "playAudio": {
+            "log": {
+                "playingFile": "Reproduciendo archivo: %s"
+            }
+        }
+    }
+}

@@ -1,7 +1,9 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 var Bot = require("./classes/discord-bot.class.js");
+var functions = require("./functions.js");
 const config = require("./config.json");
+var i18n = functions.i18n;
 
 
 const token = config.apiKeys.discordAPIKey;
@@ -14,7 +16,7 @@ client.on('ready', function() {
     client.user.setUsername(config.botConfig.username);
     client.user.setGame('Ayuda: ' + cmdPrefix + ' ayuda');
     loadPlugins(botObj, client);
-    console.log('Bot inicializado correctamente...\n');
+    console.log(i18n.__('botStarted'));
 });
 
 // Create an event listener for new guild members
