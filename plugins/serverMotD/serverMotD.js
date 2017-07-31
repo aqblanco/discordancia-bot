@@ -15,7 +15,7 @@ function onConnectWelcome(oldMember, newMember) {
         setUserLastConnection(newMember.user.id, new Date(), connectionsTable);
         var motd = getMotD(motdTable);
         if (motd != null) {
-            var lastConDate = new Date();
+            var lastConDate = new Date(lastCon);
             var sameDay = lastConDate.getDate() == new Date().getDate();
             var sameMonth = lastConDate.getMonth() == new Date().getMonth();
             var sameYear = lastConDate.getYear() == new Date().getYear();
