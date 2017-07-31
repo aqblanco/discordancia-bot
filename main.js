@@ -61,7 +61,7 @@ function loadPlugins(bot, client) {
     // Get Logs
     plugins.push(require("./plugins/getLogs/getLogs.js"));
     // Connection Alerts (Needs redo, alerts for voice channel connections)
-    //plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
+    plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
     // Server MotD
     plugins.push(require("./plugins/serverMotD/serverMotD.js"));
 

@@ -2,11 +2,17 @@ var Plugin = require.main.require("./classes/plugin.class.js");
 var EventHandler = require.main.require("./classes/event-handler.class.js");
 
 function connectionAlert(oldMember, newMember) {
-    if (oldMember.frozenPresence.status === 'offline') {
-        console.log(`${newMember.user.username} se ha conectado.`);
+    var currentStatus = newMember.guild.presences.get(newMember.user.id).status;
+    var oldStatus = oldMember.frozenPresence.status;
+
+    // Came from offline status
+    if (oldStatus === 'offline') {
+        console.log(`${newMember.user.username} se ha conectado al servidor ${newMember.guild.name}.`);
     }
-    if (oldMember.frozenPresence.status === 'online') {
-        console.log(`${newMember.user.username} se ha desconectado.`);
+
+    // Gone to offline status
+    if (currentStatus === 'offline') {
+        console.log(`${newMember.user.username} se ha desconectado del servidor ${newMember.guild.name}.`);
     }
 }
 
