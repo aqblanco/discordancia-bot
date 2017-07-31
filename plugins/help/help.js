@@ -1,6 +1,9 @@
 // Requires section
 var Command = require.main.require("./classes/command.class.js");
 
+var functions = require.main.require("./functions.js");
+var i18n = functions.i18n;
+
 // Main code section
 function getHelp(fParams, args, callback) {
     var prefix = fParams['cmdPrefix'];
@@ -47,7 +50,7 @@ function getWholeHelp(commandList, requester) {
     // Prepare embed output
     var embedMsg = {
         author: {
-            name: "Ayuda",
+            name: i18n.__("plugin.help.help"),
             icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
         },
         color: 3447003,
@@ -76,29 +79,29 @@ function getCommandHelp(commandList, command, callback) {
         var args = found.getArgumentList();
         args.forEach(function(a) {
             var opt = "";
-            if (a.optional) opt = "(Opcional) ";
+            if (a.optional) opt = "(" + i18n.__("plugin.help.optional") + ") ";
             argsStr += "`" + a.tag + "` " + opt + "- " + a.desc + "\n";
         });
-        if (argsStr === "") argsStr = "No hay argumentos disponibles para este comando.";
+        if (argsStr === "") argsStr = i18n.__("plugin.help.noAvailableArgs") /*"No hay argumentos disponibles para este comando."*/ ;
 
         // Prepare embed output
         embedMsg = {
             author: {
-                name: "Ayuda",
+                name: i18n.__("plugin.help.help"),
                 icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
             },
             color: 3447003,
-            title: found.getLabel(),
+            title: i18n.__("plugin.help.command") + ": `" + found.getLabel() + "`",
             fields: [{
-                    name: "Descripción",
+                    name: i18n.__("plugin.help.description"),
                     value: found.getDesc()
                 },
                 {
-                    name: "Argumentos",
+                    name: i18n.__("plugin.help.arguments"),
                     value: argsStr
                 },
                 {
-                    name: "Ejemplo",
+                    name: i18n.__("plugin.help.example"),
                     value: "TODO"
                 }
             ]
@@ -107,20 +110,19 @@ function getCommandHelp(commandList, command, callback) {
         res.embedMsg = embedMsg;
     } else {
         // Command not found
-        res.err = new Error("Command `" + command + "` not found!");
+        res.err = new Error(i18n.__("plugin.help.error.commandNotFound", command) /*"Command `" + command + "` not found!"*/ );
     }
 
     return res;
 }
 
 var helpArgs = [{
-    "tag": "comando",
-    "desc": "Nombre del comando del que ver la ayuda extendida.",
-    "optional": true,
-    "order": 1
+    "tag": i18n.__("plugin.help.args.command.tag"),
+    "desc": i18n.__("plugin.help.args.command.desc") /*"Nombre del comando del que ver la ayuda extendida."*/ ,
+    "optional": true
 }];
 
-var help = new Command('ayuda', 'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.', getHelp, 0, [], helpArgs);
+var help = new Command('ayuda', i18n.__("plugin.help.desc") /*'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.'*/ , getHelp, 0, [], helpArgs);
 
 
 // Exports section

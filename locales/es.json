@@ -1,5 +1,6 @@
 {
     "botStarted": "Bot inicializado correctamente...\n",
+    "argsPossibleValues": "Valores posibles:",
     "plugin": {
         "randomMemberQuote": {
             "desc": "Envia una frase aleatoria de los miembros de Rue."
@@ -7,7 +8,56 @@
         "playAudio": {
             "log": {
                 "playingFile": "Reproduciendo archivo: %s"
+            },
+            "desc": "Reproduce el audio indicado por tu canal de voz actual.",
+            "error": {
+                "noVoiceChannel": "Necesitas unirte a un canal de audio primero.",
+                "noAudio": "No se seleccionó un audio."
+            },
+            "args": {
+                "audio": {
+                    "desc": "Nombre del audio que reproducir.",
+                    "tag": "recurso"
+                }
             }
+        },
+        "warcraftLogs": {
+            "desc": "Obtiene los últimos logs de Warcraft Logs",
+            "logDate": "Log del **%s** por **%s**",
+            "atWarcraftLogs": "%s en WarCraft Logs"
+        },
+        "connectionAlerts": {
+            "userDisconnected": "%s se ha desconectado del servidor %s.",
+            "userConnected": "%s se ha conectado al servidor %s."
+        },
+        "serverMotD": {
+            "welcomeMessage": "¡Bienvenido/a al servidor, %s! Disfruta de tu estancia en %s.",
+            "motd": "Mensaje del día",
+            "args": {
+                "newMessage": {
+                    "tag": "nuevoMensaje",
+                    "desc": "Establece el mensaje diario al indicado."
+                }
+            },
+            "desc": "Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.",
+            "error": {
+                "noMotDSet": "No hay un mensaje del día."
+            }
+        },
+        "help": {
+            "args": {
+                "command": {
+                    "tag": "comando",
+                    "desc": "Nombre del comando del que ver la ayuda extendida."
+                }
+            },
+            "desc": "Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.",
+            "help": "Ayuda",
+            "optional": "Opcional",
+            "description": "Descripción",
+            "arguments": "Argumentos",
+            "example": "Ejemplo",
+            "command": "Comando"
         }
     }
 }

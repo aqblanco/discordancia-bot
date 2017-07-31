@@ -2,7 +2,7 @@
 var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 var ResourceManager = require.main.require("./classes/resource-manager.class.js");
-var resources = require.main.require("./resources.js"); 
+var resources = require.main.require("./resources.js");
 var functions = require.main.require("./functions.js");
 var i18n = functions.i18n;
 
@@ -36,20 +36,20 @@ function playSound(fParams, args, callback) {
                 .catch(console.log);
         } else {
             // No voice channel
-            callback(new Error('You need to join a voice channel first!'));
+            callback(new Error(i18n.__("plugin.playAudio.error.noVoiceChannel") /*'You need to join a voice channel first!'*/ ));
             return;
         }
     } else {
         // No args
-        callback(new Error('No audio selected!'));
+        callback(new Error(i18n.__("plugin.playAudio.error.noAudio") /*'No audio selected!'*/ ));
         return;
     }
     callback(null, "");
 }
 
 var playAudioArgs = [{
-    "tag": "recurso",
-    "desc": "Nombre del audio que reproducir.\n\n\t**Valores posibles:**\n\t\t`" + rm.getResourceList().join("`\n\t\t`") + "`",
+    "tag": i18n.__("plugin.playAudio.args.audio.tag"),
+    "desc": i18n.__("plugin.playAudio.args.audio.desc") + "\n\n\t**" + i18n.__("argsPossibleValues") + "**\n\t\t`" + rm.getResourceList().join("`\n\t\t`") + "`",
     "optional": false
 }];
 
@@ -57,7 +57,7 @@ var playAudioArgs = [{
 var commands = [];
 var eventHandlers = [];
 
-var playAudioCmd = new Command('audio', 'Reproduce el audio indicado por tu canal de voz actual.', playSound, 0, [], playAudioArgs);
+var playAudioCmd = new Command('audio', i18n.__("plugin.playAudio.desc") /*'Reproduce el audio indicado por tu canal de voz actual.'*/ , playSound, 0, [], playAudioArgs);
 commands.push(playAudioCmd);
 
 var playAudio = new Plugin(commands, eventHandlers);

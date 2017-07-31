@@ -2,6 +2,9 @@ var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 var EventHandler = require.main.require("./classes/event-handler.class.js");
 
+var functions = require.main.require("./functions.js");
+var i18n = functions.i18n;
+
 const PersistentCollection = require('djs-collection-persistent');
 // Tables
 const connectionsTable = new PersistentCollection({ name: "connections" });
@@ -23,8 +26,8 @@ function onConnectWelcome(oldMember, newMember) {
             // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
             if (changed || !sameDay || !sameMonth || !sameYear) {
                 // PM with welcome message
-                newMember.user.send(`Bienvenido al servidor ${newMember.guild.name}!. Disfruta de tu estancia.`);
-                newMember.user.send(`***Mensaje del día***: ${motd.message}`);
+                newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.userName, newMember.guild.name)); /*`Bienvenido al servidor ${newMember.guild.name}!. Disfruta de tu estancia.`*/
+                newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd.message}`);
             }
         }
     }
@@ -48,7 +51,7 @@ function motd(fParams, args, callback) {
     if (res != null) {
         embedMsg = {
             author: {
-                name: "Mensaje del día",
+                name: i18n.__("plugin.serverMotD.motd"),
                 icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
             },
             color: 3447003,
@@ -56,7 +59,7 @@ function motd(fParams, args, callback) {
         };
         callback(null, embedMsg, true);
     } else {
-        callback(new Error("No MotD set."));
+        callback(new Error(i18n.__("plugin.serverMotD.error.noMotDSet") /*"No MotD set."*/ ));
     }
 }
 
@@ -92,8 +95,8 @@ function motdChanged(lastLoginDate, motdChangeDate) {
 }
 
 var motdArgs = [{
-    "tag": "nuevoMensaje",
-    "desc": "Establece el mensaje diario al indicado.",
+    "tag": i18n.__("plugin.serverMotD.args.newMessage.tag"), //"nuevoMensaje",
+    "desc": i18n.__("plugin.serverMotD.args.newMessage.desc"), //"Establece el mensaje diario al indicado.",
     "optional": true
 }];
 
@@ -102,7 +105,7 @@ var eventHandlers = [];
 
 var serverMotDEvent = new EventHandler('presenceUpdate', onConnectWelcome);
 eventHandlers.push(serverMotDEvent);
-var serverMotDCmd = new Command('motd', 'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.', motd, 1, [], motdArgs);
+var serverMotDCmd = new Command('motd', i18n.__("plugin.serverMotD.desc") /*'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.'*/ , motd, 1, [], motdArgs);
 commands.push(serverMotDCmd);
 
 var serverMotD = new Plugin(commands, eventHandlers);
