@@ -59,7 +59,7 @@ function loadPlugins(bot, client) {
     // Play Audio
     plugins.push(require("./plugins/playAudio/playAudio.js"));
     // Get Logs
-    plugins.push(require("./plugins/getLogs/getLogs.js"));
+    plugins.push(require("./plugins/warcraftLogs/getLogs.js"));
     // Connection Alerts (Needs redo, alerts for voice channel connections)
     plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
     // Server MotD
