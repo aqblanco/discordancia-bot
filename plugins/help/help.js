@@ -25,7 +25,18 @@ function getHelp(fParams, args, callback) {
         return;
     }
 
-    callback(null, res.embedMsg, true);
+    var embed = res.embedMsg;
+    message.member.send({ embed });
+
+    var userNotification = {
+        author: {
+            name: i18n.__("plugin.help.help"),
+            icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+        },
+        color: 3447003,
+        description: i18n.__("plugin.help.helpSentNotification", `<@${message.member.user.id}>`)
+    };
+    callback(null, userNotification, true);
 }
 
 function getWholeHelp(commandList, requester) {
