@@ -34,7 +34,7 @@ function getHelp(fParams, args, callback) {
             icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
         },
         color: 3447003,
-        description: i18n.__("plugin.help.helpSentNotification", `<@${message.member.user.id}>`)
+        description: "**" + i18n.__("plugin.help.helpSentNotification", `<@${message.member.user.id}>`) + "**"
     };
     callback(null, userNotification, true);
 }

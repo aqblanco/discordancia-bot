@@ -58,7 +58,7 @@
             "arguments": "Argumentos",
             "example": "Ejemplo",
             "command": "Comando",
-            "helpSentNotification": "%s, te envié la ayuda que solicitaste mediante mensaje privado."
+            "helpSentNotification": "%s, consulta tus mensajes privados para ver la ayuda."
         }
     }
 }
