@@ -17,16 +17,23 @@ function onConnectWelcome(oldMember, newMember) {
         var lastCon = getUserLastConnection(newMember.user.id, connectionsTable);
         setUserLastConnection(newMember.user.id, new Date(), connectionsTable);
         var motd = getMotD(motdTable);
+
         if (motd != null) {
-            var lastConDate = new Date(lastCon);
-            var sameDay = lastConDate.getDate() == new Date().getDate();
-            var sameMonth = lastConDate.getMonth() == new Date().getMonth();
-            var sameYear = lastConDate.getYear() == new Date().getYear();
-            var changed = motdChanged(lastCon, motd.timestamp);
+            if (lastCon != null) {
+                // Not first connection, check message changed, or previous connection not in the same day
+                var lastConDate = new Date(lastCon);
+                var sameDay = lastConDate.getDate() == new Date().getDate();
+                var sameMonth = lastConDate.getMonth() == new Date().getMonth();
+                var sameYear = lastConDate.getYear() == new Date().getYear();
+                var changed = motdChanged(lastCon, motd.timestamp);
+            } else {
+                // First connection, force showing motd
+                var sameDay, sameMonth, sameYear = false;
+            }
             // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
             if (changed || !sameDay || !sameMonth || !sameYear) {
                 // PM with welcome message
-                newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.userName, newMember.guild.name)); /*`Bienvenido al servidor ${newMember.guild.name}!. Disfruta de tu estancia.`*/
+                newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.username, newMember.guild.name));
                 newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd.message}`);
             }
         }
@@ -67,7 +74,7 @@ function getUserLastConnection(userID, table) {
     // Get last connection from persistance
     var lastConnection = table.get(userID);
     // Fix for empty result (first connection)
-    lastConnection = typeof lastConnection === 'undefined' ? new Date().getTime() : lastConnection;
+    lastConnection = typeof lastConnection === 'undefined' ? null : lastConnection;
 
     return lastConnection;
 }
