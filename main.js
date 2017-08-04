@@ -64,6 +64,8 @@ function loadPlugins(bot, client) {
     plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
     // Server MotD
     plugins.push(require("./plugins/serverMotD/serverMotD.js"));
+    // Overwatch Stats
+    plugins.push(require("./plugins/owStats/owStats.js"));
 
     plugins.forEach(function(p) {
         commands = commands.concat(p.getCommands());

@@ -9,6 +9,7 @@
     "ffmpeg-binaries": "^3.2.2-3",
     "i18n": "^0.8.3",
     "opusscript": "0.0.3",
+    "overwatch-js": "^1.5.4",
     "weasel.js": "^1.0.0"
   },
   "devDependencies": {},
