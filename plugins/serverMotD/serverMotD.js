@@ -25,16 +25,22 @@ function onConnectWelcome(oldMember, newMember) {
                 var sameDay = lastConDate.getDate() == new Date().getDate();
                 var sameMonth = lastConDate.getMonth() == new Date().getMonth();
                 var sameYear = lastConDate.getYear() == new Date().getYear();
-                var changed = motdChanged(lastCon, motd.timestamp);
             } else {
                 // First connection, force showing motd
                 var sameDay, sameMonth, sameYear = false;
             }
+
+            // Message of the day is set, show it in addition to welcome message
+            var changed = motdChanged(lastCon, motd.timestamp);
             // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
             if (changed || !sameDay || !sameMonth || !sameYear) {
-                // PM with welcome message
-                newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.username, newMember.guild.name));
-                newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd.message}`);
+                // PM with welcome message to non-bot users
+                if (!newMember.user.bot) {
+                    newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.username, newMember.guild.name))
+                        .then(m => newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd.message}`))
+                        .then(m => console.log(`MotD enviado al usuario ${newMember.user.username}`))
+                        .catch(console.error);
+                }
             }
         }
     }
