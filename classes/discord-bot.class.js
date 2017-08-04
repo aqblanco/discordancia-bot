@@ -57,6 +57,7 @@ module.exports =
                                         .then(m => console.log('Mensaje enviado: ' + JSON.stringify(formatedMsg)))
                                         .catch(console.error);
                                 } else {
+                                    // Blank message, delete processing one
                                     processingMsg.delete();
                                 }
                             }));

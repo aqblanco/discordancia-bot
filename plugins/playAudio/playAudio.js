@@ -44,6 +44,7 @@ function playSound(fParams, args, callback) {
         callback(new Error(i18n.__("plugin.playAudio.error.noAudio") /*'No audio selected!'*/ ));
         return;
     }
+    // No output, send blank message
     callback(null, "");
 }
 
