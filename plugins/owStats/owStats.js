@@ -1,74 +1,20 @@
 var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
 
 var owjs = require('overwatch-js');
 
 function owStats(fParams, args, callback) {
-    if (args.length > 0) {
-        var action = args[0];
-        var btag = "";
-        if (args[1]) {
-            btag = args[1];
-        } else {
-            // Try to get from db
-            btag = "Hiro#2564";
-        }
-
-        switch (action) {
-            case 'pr':
-                getQPStats(btag, callback);
-                break;
-            case 'comp':
-                getCompStats(btag, callback);
-                break;
-            default:
-                callback(new Error("Invalid option."));
-        }
-    } else {
-        // If linked btag is present, show quick match stats
-        callback(new Error("Choose an option."));
-    }
-
+    getPlayerStats(callback);
 }
 
-function getQPStats(btag, callback) {
-    var accName = btag.replace("#", "-");
+function getPlayerStats(callback) {
     owjs
-        .getAll('pc', 'eu', accName)
+        .getAll('pc', 'eu', 'Hiro-2564')
         .then((data) => {
-            //console.dir(data.profile, { depth: 2, colors: true });
-            var qPStatsEmbed = getQPStatsEmbed(btag, data);
+            //console.dir(data.quickplay.heroes, { depth: 2, colors: true });
+            var qPStatsEmbed = getQPStatsEmbed(data);
             callback(null, qPStatsEmbed, true);
         });
-}
-
-function getCompStats(btag, callback) {
-    var accName = btag.replace("#", "-");
-    owjs
-        .getAll('pc', 'eu', accName)
-        .then((data) => {
-            //console.dir(data.profile, { depth: 2, colors: true });
-            var compStatsEmbed = getCompStatsEmbed(btag, data);
-            callback(null, compStatsEmbed, true);
-        });
-}
-
-function linkBTag(userID, btag) {
-
-}
-
-function unlinkBTag(userID) {
-
-}
-
-function getLinkedBTag(userID) {
-    return "Hiro#2564"
-}
-
-function bTagIsLinked(userID) {
-    return getLinkedBTag(userID) != "";
 }
 
 function getMostPlayedHeroes(n, heroes) {
@@ -93,7 +39,7 @@ function getMostPlayedHeroes(n, heroes) {
     return (heroesArray);
 }
 
-function getQPStatsEmbed(btag, pData) {
+function getQPStatsEmbed(pData) {
     var heroes = pData.quickplay.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
     var mostPHeroes = getMostPlayedHeroes(5, heroes);
@@ -127,7 +73,7 @@ function getQPStatsEmbed(btag, pData) {
     });
 
     var data = {
-        account: btag,
+        account: "Hiro#2564",
         gameMode: "Partida rápida",
         avatar: pData.profile.avatar,
         accountStats: accStatsStr,
@@ -139,7 +85,7 @@ function getQPStatsEmbed(btag, pData) {
     return getStatsEmbed(data);
 }
 
-function getCompStatsEmbed(btag, pData) {
+function getCompStatsEmbed(pData) {
     var heroes = pData.competitive.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
     var mostPHeroes = getMostPlayedHeroes(5, heroes);
@@ -165,7 +111,7 @@ function getCompStatsEmbed(btag, pData) {
     ];
 
     var data = {
-        account: btag,
+        account: "Hiro#2564",
         gameMode: "Competitivo",
         avatar: pData.profile.avatar,
         accountStats: accStatsStr,
@@ -234,7 +180,7 @@ var eventHandlers = [];
 
 var owStatsCmd = new Command('owstats', 'Lorem Ipsum', owStats);
 commands.push(owStatsCmd);
-// owstats [pr|comp|vincular|desvincular] [btag]
+// owstats [pr|competitiva|vincular|desvincular] [btag]
 var owStats = new Plugin(commands, eventHandlers);
 
 
