@@ -25,7 +25,7 @@ var eventHandlers = [];
 var connectionAlertEvent = new EventHandler('presenceUpdate', connectionAlert);
 eventHandlers.push(connectionAlertEvent);
 
-var connectionAlerts = new Plugin(commands, eventHandlers);
+var connectionAlerts = new Plugin('connectionAlerts', commands, eventHandlers);
 
 
 // Exports section

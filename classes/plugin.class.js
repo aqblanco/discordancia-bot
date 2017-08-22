@@ -1,6 +1,7 @@
 module.exports =
     class Plugin {
-        constructor(commands = [], eventHandlers = []) {
+        constructor(name, commands = [], eventHandlers = []) {
+            this.name = name;
             this.commands = commands;
             this.eventHandlers = eventHandlers;
         }

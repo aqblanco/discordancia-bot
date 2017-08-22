@@ -121,7 +121,7 @@ eventHandlers.push(serverMotDEvent);
 var serverMotDCmd = new Command('motd', i18n.__("plugin.serverMotD.desc") /*'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.'*/ , motd, 1, [], motdArgs);
 commands.push(serverMotDCmd);
 
-var serverMotD = new Plugin(commands, eventHandlers);
+var serverMotD = new Plugin('serverMotD', commands, eventHandlers);
 
 
 // Exports section

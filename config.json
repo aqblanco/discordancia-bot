@@ -6,7 +6,8 @@
 
     "botConfig": {
         "username": "M.O.T.O.",
-        "cmdPrefix": "|rue"
+        "cmdPrefix": "|rue",
+        "enabledPlugins": ["connectionAlerts", "playAudio", "serverMotD", "owStats", "randomMemberQuote"]
     },
 
     "guildInfo": {

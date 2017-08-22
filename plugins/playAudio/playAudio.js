@@ -61,7 +61,7 @@ var eventHandlers = [];
 var playAudioCmd = new Command('audio', i18n.__("plugin.playAudio.desc") /*'Reproduce el audio indicado por tu canal de voz actual.'*/ , playSound, 0, [], playAudioArgs);
 commands.push(playAudioCmd);
 
-var playAudio = new Plugin(commands, eventHandlers);
+var playAudio = new Plugin('playAudio', commands, eventHandlers);
 
 
 // Exports section

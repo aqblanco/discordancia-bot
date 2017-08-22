@@ -68,12 +68,14 @@ function loadPlugins(bot, client) {
     plugins.push(require("./plugins/owStats/owStats.js"));
 
     plugins.forEach(function(p) {
-        commands = commands.concat(p.getCommands());
+        if (functions.pluginIsEnabled(p.name)) {
+            commands = commands.concat(p.getCommands());
 
-        bot.addCommands(p.getCommands());
-        p.getEventHandlers().forEach(function(handler) {
-            handler.bind(client);
-        });
+            bot.addCommands(p.getCommands());
+            p.getEventHandlers().forEach(function(handler) {
+                handler.bind(client);
+            });
+        }
     });
 
     // Help

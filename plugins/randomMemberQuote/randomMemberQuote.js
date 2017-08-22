@@ -20,7 +20,7 @@ var eventHandlers = [];
 var randomMemberQuoteCmd = new Command('frase', i18n.__('plugin.randomMemberQuote.desc'), getRandomMemberQuote);
 commands.push(randomMemberQuoteCmd);
 
-var randomMemberQuote = new Plugin(commands, eventHandlers);
+var randomMemberQuote = new Plugin('randomMemberQuote', commands, eventHandlers);
 
 
 // Exports section

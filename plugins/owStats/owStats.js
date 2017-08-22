@@ -181,7 +181,7 @@ var eventHandlers = [];
 var owStatsCmd = new Command('owstats', 'Lorem Ipsum', owStats);
 commands.push(owStatsCmd);
 // owstats [pr|competitiva|vincular|desvincular] [btag]
-var owStats = new Plugin(commands, eventHandlers);
+var owStats = new Plugin('owStats', commands, eventHandlers);
 
 
 // Exports section

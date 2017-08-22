@@ -34,6 +34,12 @@ module.exports.formatError = function(msg) {
     return embed;
 }
 
+module.exports.pluginIsEnabled = function(name) {
+    const config = require("./config.json");
+
+    return config.botConfig.enabledPlugins.includes(name);
+}
+
 // Initialize internacionalization support
 var i18n = require("i18n");
 
