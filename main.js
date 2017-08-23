@@ -37,7 +37,12 @@ client.on('message', function(message) {
     var botUser = client.user.username;
     var firstEle = message.content.split(/\s+/g)[0];
 
-    if (firstEle.toLowerCase() === cmdPrefix.toLowerCase() || message.mentions.users.find("username", botUser) !== null) {
+    var prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
+    var mentionPresent = message.mentions.users.find("username", botUser) !== null;
+    var isDM = message.channel.type == 'dm';
+
+    // Reply when using bot prefix or mentions, ignore direct messages, as it's impossible to determine the server
+    if ((prefixPresent || mentionPresent) && !isDM) {
         // Cut the prefix or bot mention from the message
         var tempA = message.content.split(/\s+/g);
         tempA.splice(0, 1); // Prefix item
