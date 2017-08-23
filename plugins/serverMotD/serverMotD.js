@@ -7,17 +7,16 @@ var i18n = functions.i18n;
 
 const PersistentCollection = require('djs-collection-persistent');
 // Tables
-const connectionsTable = new PersistentCollection({ name: "connections" });
-const motdTable = new PersistentCollection({ name: "motd" });
+const connectionsTable = new PersistentCollection({ name: "userInfo" });
+const motdTable = new PersistentCollection({ name: "serverInfo" });
 
 
 function onConnectWelcome(oldMember, newMember) {
     // Trigger when coming from offline
     if (oldMember.frozenPresence.status === 'offline') {
-        var lastCon = getUserLastConnection(newMember.user.id, connectionsTable);
-        setUserLastConnection(newMember.user.id, new Date(), connectionsTable);
-        var motd = getMotD(motdTable);
-
+        var lastCon = getUserLastConnection(newMember.user.id, newMember.guild.id, connectionsTable);
+        setUserLastConnection(newMember.user.id, newMember.guild.id, new Date(), connectionsTable);
+        var motd = getMotD(newMember.guild.id, motdTable);
         if (motd != null) {
             if (lastCon != null) {
                 // Not first connection, check message changed, or previous connection not in the same day
@@ -52,13 +51,13 @@ function motd(fParams, args, callback) {
 
     // Display current MotD
     if (args.length == 0) {
-        var motdObject = getMotD(motdTable);
-        res = motdObject.message;
+        var motdObject = getMotD(message.guild.id, motdTable);
+        res = motdObject != null ? motdObject.message : null;
         // Update MotD
     } else {
         // Create a string from the args, that is, the motd
         res = args.join(' ');
-        setMotD(res, motdTable);
+        setMotD(res, message.guild.id, motdTable);
     }
 
     if (res != null) {
@@ -76,30 +75,58 @@ function motd(fParams, args, callback) {
     }
 }
 
-function getUserLastConnection(userID, table) {
+function getUserLastConnection(userID, server, table) {
     // Get last connection from persistance
-    var lastConnection = table.get(userID);
-    // Fix for empty result (first connection)
-    lastConnection = typeof lastConnection === 'undefined' ? null : lastConnection;
-
+    var usersInfo = table.get(server);
+    // No users entries
+    usersInfo = typeof usersInfo === 'undefined' ? null : usersInfo;
+    var lastConnection = null;
+    if (usersInfo != null) {
+        // Set to null when no user entry
+        lastConnection = typeof usersInfo[userID] === 'undefined' ? null : usersInfo[userID].lastC;
+        // Fix for empty result (first connection)
+        lastConnection = typeof lastConnection === 'undefined' ? null : lastConnection;
+    }
     return lastConnection;
 }
 
-function setUserLastConnection(userID, lastC, table) {
-    table.set(userID, lastC.getTime());
+function setUserLastConnection(userID, server, lastC, table) {
+    // Retrieve current info
+    var userInfo = table.get(server);
+    // Set new MotD
+    var newInfo = {};
+    // If records exists update them, else create new ones
+    if (typeof userInfo != 'undefined') newInfo = userInfo;
+    // Initialice motd object if necessary
+    newInfo[userID] = newInfo[userID] || {};
+    newInfo[userID].lastC = lastC.getTime();
+    // Write whole object
+    table.set(server, newInfo);
 }
 
-function getMotD(table) {
-    // Get message of the day data from persistance
-    var motd = table.get('motd');
+function getMotD(server, table) {
+    // Get server data from persistance
+    var serverInfo = table.get(server);
+    var motd = typeof serverInfo === 'undefined' ? null : serverInfo.motd;
+
     // Fix for empty result (no motd set yet)
     motd = typeof motd === 'undefined' ? null : motd;
-
     return motd;
 }
 
-function setMotD(msg, table) {
-    table.set('motd', { 'message': msg, 'timestamp': new Date().getTime() });
+function setMotD(msg, server, table) {
+    // Retrieve current info
+    var serverInfo = table.get(server);
+    // Set new MotD
+    var newInfo = {};
+    // If records exists update them, else create new ones
+    if (typeof serverInfo != 'undefined') newInfo = serverInfo;
+    // Initialice motd object if necessary
+    newInfo.motd = newInfo.motd || {};
+    newInfo.motd.message = msg;
+    newInfo.motd.timestamp = new Date().getTime();
+    // Write whole object
+    table.set(server, newInfo);
 }
 
 function motdChanged(lastLoginDate, motdChangeDate) {
