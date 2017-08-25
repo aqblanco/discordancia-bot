@@ -12,6 +12,7 @@ const motdTable = new PersistentCollection({ name: "serverInfo" });
 
 
 function onConnectWelcome(oldMember, newMember) {
+    const daysInterval = 7; // Interval of days to show MotD if it has not changed
     // Trigger when coming from offline
     if (oldMember.frozenPresence.status === 'offline') {
         var lastCon = getUserLastConnection(newMember.user.id, newMember.guild.id, connectionsTable);
@@ -21,18 +22,19 @@ function onConnectWelcome(oldMember, newMember) {
             if (lastCon != null) {
                 // Not first connection, check message changed, or previous connection not in the same day
                 var lastConDate = new Date(lastCon);
-                var sameDay = lastConDate.getDate() == new Date().getDate();
+                /*var sameDay = lastConDate.getDate() == new Date().getDate();
                 var sameMonth = lastConDate.getMonth() == new Date().getMonth();
-                var sameYear = lastConDate.getYear() == new Date().getYear();
+                var sameYear = lastConDate.getYear() == new Date().getYear();*/
+                var daysLastChange = daysDifference(lastConDate, new Date());
             } else {
                 // First connection, force showing motd
-                var sameDay, sameMonth, sameYear = false;
+                var daysLastChange = daysInterval;
             }
 
             // Message of the day is set, show it in addition to welcome message
             var changed = motdChanged(lastCon, motd.timestamp);
             // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
-            if (changed || !sameDay || !sameMonth || !sameYear) {
+            if (changed || daysLastChange >= daysInterval) {
                 // PM with welcome message to non-bot users
                 if (!newMember.user.bot) {
                     newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.username, newMember.guild.name))
@@ -132,6 +134,11 @@ function setMotD(msg, server, table) {
 function motdChanged(lastLoginDate, motdChangeDate) {
     var res = motdChangeDate > lastLoginDate;
     return res;
+}
+
+// Gets difference in days between to dates
+function daysDifference(d1, d2) {
+    return d2.getDate() - d1.getDate();
 }
 
 var motdArgs = [{
