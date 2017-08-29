@@ -1,19 +1,52 @@
 var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
-
+var functions = require.main.require("./functions.js");
 var owjs = require('overwatch-js');
 
+var i18n = functions.i18n;
+
 function owStats(fParams, args, callback) {
-    getPlayerStats(callback);
+    var validateBTag = functions.validateBTag;
+    var btag = null;
+    var request = null;
+
+    // Determine which btag to query
+    // Check if the first argument is a valid btag
+    if (validateBTag(args[0])) {
+        btag = args[0];
+        // Check if the second argument is a valid btag
+    } else if (validateBTag(args[1])) {
+        btag = args[1];
+        request = args[0];
+    } else {
+        // try to get user's btag from persistance
+        btag = readUserBTag();
+        request = args[0];
+    }
+
+    // If btag is set, get data for it
+    if (btag != null) {
+        getPlayerStats(btag, request, callback);
+    } else {
+        callback(new Error(i18n.__("plugin.owstats.error.noBTagSet", fParams.message.author.username)))
+    }
 }
 
-function getPlayerStats(callback) {
+function getPlayerStats(btag, request, callback) {
     owjs
-        .getAll('pc', 'eu', 'Hiro-2564')
+        .getAll('pc', 'eu', btag.replace('#', '-'))
         .then((data) => {
             //console.dir(data.quickplay.heroes, { depth: 2, colors: true });
-            var qPStatsEmbed = getQPStatsEmbed(data);
-            callback(null, qPStatsEmbed, true);
+            data.profile.btag = btag;
+            switch (request) {
+                case 'comp':
+                    var statsEmbed = getCompStatsEmbed(data);
+                    break;
+                case 'pr':
+                default:
+                    var statsEmbed = getQPStatsEmbed(data);
+            }
+            callback(null, statsEmbed, true);
         });
 }
 
@@ -73,7 +106,7 @@ function getQPStatsEmbed(pData) {
     });
 
     var data = {
-        account: "Hiro#2564",
+        account: pData.profile.btag,
         gameMode: "Partida rápida",
         avatar: pData.profile.avatar,
         accountStats: accStatsStr,
@@ -111,7 +144,7 @@ function getCompStatsEmbed(pData) {
     ];
 
     var data = {
-        account: "Hiro#2564",
+        account: pData.profile.btag,
         gameMode: "Competitivo",
         avatar: pData.profile.avatar,
         accountStats: accStatsStr,
@@ -148,6 +181,11 @@ function getStatsEmbed(data) {
         .addField("Héroes más usados", mostPHeroesStr, true)
 
     return (embed);
+}
+
+function readUserBTag() {
+    var btag = "Hiro#2564";
+    return btag;
 }
 
 function compareValues(key, order = 'asc') {
