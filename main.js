@@ -71,6 +71,8 @@ function loadPlugins(bot, client) {
     plugins.push(require("./plugins/serverMotD/serverMotD.js"));
     // Overwatch Stats
     plugins.push(require("./plugins/owStats/owStats.js"));
+    // Manage User BTag
+    plugins.push(require("./plugins/manageUserBTag/manageUserBTag.js"));
 
     plugins.forEach(function(p) {
         if (functions.pluginIsEnabled(p.name)) {

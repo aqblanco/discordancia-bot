@@ -59,6 +59,11 @@
             "example": "Ejemplo",
             "command": "Comando",
             "helpSentNotification": "%s, consulta tus mensajes privados para ver la ayuda."
+        },
+        "owstats": {
+            "error": {
+                "noBTagSet": "No se indicó ningún Battle.tag válido y el usuario %s no tiene ninguno establecido por defecto."
+            }
         }
     }
 }

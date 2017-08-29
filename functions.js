@@ -40,6 +40,19 @@ module.exports.pluginIsEnabled = function(name) {
     return config.botConfig.enabledPlugins.includes(name);
 }
 
+module.exports.validateBTag = function(btag) {
+    // From the naming policy: http://us.battle.net/support/en/article/battletag-naming-policy
+    /*
+    BattleTags must be between 3-12 characters long.
+    Accented characters are allowed.
+    Numbers are allowed, but a BattleTag cannot start with a number.
+    Mixed capitals are allowed (ex: TeRrAnMaRiNe).
+    No spaces or symbols are allowed (“, *, #, +, etc…).
+     */
+    var pattern = /^\D.{2,11}#\d{4}$/u;
+    return pattern.test(btag);
+}
+
 // Initialize internacionalization support
 var i18n = require("i18n");
 
