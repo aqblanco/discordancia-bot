@@ -6,7 +6,8 @@ var owjs = require('overwatch-js');
 var i18n = functions.i18n;
 
 function owStats(fParams, args, callback) {
-    var validateBTag = functions.validateBTag;
+    var btagLib = require.main.require("./lib/btag.lib.js");
+    var validateBTag = btagLib.validateBTag;
     var btag = null;
     var request = null;
 
@@ -18,9 +19,10 @@ function owStats(fParams, args, callback) {
     } else if (validateBTag(args[1])) {
         btag = args[1];
         request = args[0];
+        // No (valid) btag, try to get user's btag from persistance
     } else {
-        // try to get user's btag from persistance
-        btag = readUserBTag();
+        var userID = fParams.message.author.id;
+        btag = readUserBTag(userID);
         request = args[0];
     }
 
@@ -28,13 +30,13 @@ function owStats(fParams, args, callback) {
     if (btag != null) {
         getPlayerStats(btag, request, callback);
     } else {
-        callback(new Error(i18n.__("plugin.owstats.error.noBTagSet", fParams.message.author.username)))
+        callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
     }
 }
 
 function getPlayerStats(btag, request, callback) {
     owjs
-        .getAll('pc', 'eu', btag.replace('#', '-'))
+        .getAll('pc', 'eu', btag.replace('#', '-'), 'es-es')
         .then((data) => {
             //console.dir(data.quickplay.heroes, { depth: 2, colors: true });
             data.profile.btag = btag;
@@ -76,42 +78,35 @@ function getQPStatsEmbed(pData) {
     var heroes = pData.quickplay.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
     var mostPHeroes = getMostPlayedHeroes(5, heroes);
-    var rank = pData.profile.rank || '-';
-    var accStatsStr = [
-        `*Nivel:* ${pData.profile.tier}${pData.profile.level}`,
-        `*Rango:* ${rank}`
-    ];
-    var medalsStr = [
-        `*Total:* ${pData.quickplay.global.medals || '0'}`,
-        `*Oro:* ${pData.quickplay.global.medals_gold || '0'}`,
-        `*Plata:* ${pData.quickplay.global.medals_silver || '0'}`,
-        `*Bronce:* ${pData.quickplay.global.medals_bronze || '0'}`
-    ];
-    var quickPlayStr = [
-        `*Victorias:* ${pData.quickplay.global.games_won}`,
-        `*Eliminaciones:* ${pData.quickplay.global.eliminations}`,
-        `*Golpes de gracia:* ${pData.quickplay.global.final_blows}`,
-        `*Muertes:* ${pData.quickplay.global.deaths}`,
-        `*Eliminaciones/Muertes:* ${(Math.floor(pData.quickplay.global.deaths / pData.quickplay.global.eliminations * 100) / 100).toFixed(2)}`,
-        `*Daño total:* ${pData.quickplay.global.all_damage_done}`,
-        `*Sanación total:* ${pData.quickplay.global.healing_done}`
-    ];
 
-    var mostPHeroesStr = mostPHeroes.map(function(v) {
-        var played = Math.floor(v.time_played / (60 * 60) / 1000); // Convert from milliseconds
-        var name = v.name;
-        name = name.replace('_', ' ');
-        name = name.charAt(0).toUpperCase() + name.substring(1);
-        return `*${name}:* ${played} horas`;
-    });
+    var accStats = {
+        level: `${pData.profile.tier}${pData.profile.level}`,
+        rank: pData.profile.rank
+    };
+
+    var medals = {
+        total: pData.quickplay.global.medals,
+        gold: pData.quickplay.global.medals_gold,
+        silver: pData.quickplay.global.medals_silver,
+        bronze: pData.quickplay.global.medals_bronze
+    };
+    var quickPlayStats = {
+        victories: pData.quickplay.global.games_won,
+        eliminations: pData.quickplay.global.eliminations,
+        finalBlows: pData.quickplay.global.final_blows,
+        deaths: pData.quickplay.global.deaths,
+        ePerD: (Math.floor(pData.quickplay.global.deaths / pData.quickplay.global.eliminations * 100) / 100).toFixed(2),
+        totalDmg: pData.quickplay.global.all_damage_done,
+        totalHealing: pData.quickplay.global.healing_done
+    };
 
     var data = {
         account: pData.profile.btag,
-        gameMode: "Partida rápida",
+        gameMode: i18n.__("plugin.owStats.gameMode.quickMatch"),
         avatar: pData.profile.avatar,
-        accountStats: accStatsStr,
-        medals: medalsStr,
-        gameModeStats: quickPlayStr,
+        accountStats: accStats,
+        medals: medals,
+        gameModeStats: quickPlayStats,
         mostPHeroes: mostPHeroes
     }
 
@@ -119,37 +114,37 @@ function getQPStatsEmbed(pData) {
 }
 
 function getCompStatsEmbed(pData) {
-    var heroes = pData.competitive.heroes;
+    var heroes = pData.quickplay.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
     var mostPHeroes = getMostPlayedHeroes(5, heroes);
-    var rank = isNaN(pData.profile.rank) ? '-' : pData.profile.rank;
-    var accStatsStr = [
-        `*Nivel:* ${pData.profile.tier}${pData.profile.level}`,
-        `*Rango:* ${rank}`
-    ];
-    var medalsStr = [
-        `*Total:* ${pData.competitive.global.medals || '0'}`,
-        `*Oro:* ${pData.competitive.global.medals_gold || '0'}`,
-        `*Plata:* ${pData.competitive.global.medals_silver || '0'}`,
-        `*Bronce:* ${pData.competitive.global.medals_bronze || '0'}`
-    ];
-    var competitiveStr = [
-        `*Victorias:* ${pData.competitive.global.games_won}`,
-        `*Eliminaciones:* ${pData.competitive.global.eliminations}`,
-        `*Golpes de gracia:* ${pData.competitive.global.final_blows}`,
-        `*Muertes:* ${pData.competitive.global.deaths}`,
-        `*Eliminaciones/Muertes:* ${(Math.floor(pData.competitive.global.deaths / pData.competitive.global.eliminations * 100) / 100).toFixed(2)}`,
-        `*Daño total:* ${pData.competitive.global.all_damage_done}`,
-        `*Sanación total:* ${pData.competitive.global.healing_done}`
-    ];
 
+    var accStats = {
+        level: `${pData.profile.tier}${pData.profile.level}`,
+        rank: pData.profile.rank
+    };
+    var medals = {
+        total: pData.competitive.global.medals,
+        gold: pData.competitive.global.medals_gold,
+        silver: pData.competitive.global.medals_silver,
+        bronze: pData.competitive.global.medals_bronze
+    };
+    var competitiveStats = {
+        victories: pData.competitive.global.games_won,
+        eliminations: pData.competitive.global.eliminations,
+        finalBlows: pData.competitive.global.final_blows,
+        deaths: pData.competitive.global.deaths,
+        ePerD: (Math.floor(pData.competitive.global.deaths / pData.competitive.global.eliminations * 100) / 100).toFixed(2),
+        totalDmg: pData.competitive.global.all_damage_done,
+        totalHealing: pData.competitive.global.healing_done
+    };
+    console.log(pData.profile);
     var data = {
         account: pData.profile.btag,
-        gameMode: "Competitivo",
+        gameMode: i18n.__("plugin.owStats.gameMode.competitive"),
         avatar: pData.profile.avatar,
-        accountStats: accStatsStr,
-        medals: medalsStr,
-        gameModeStats: competitiveStr,
+        accountStats: accStats,
+        medals: medals,
+        gameModeStats: competitiveStats,
         mostPHeroes: mostPHeroes
     }
 
@@ -158,6 +153,26 @@ function getCompStatsEmbed(pData) {
 
 function getStatsEmbed(data) {
     const Discord = require("discord.js");
+
+    var accStatsStr = [
+        `*${i18n.__("plugin.owStats.accStats.level")}:* ${data.accountStats.level}`,
+        `*${i18n.__("plugin.owStats.accStats.rank")}:* ${data.accountStats.rank || '-'}`
+    ];
+    var medalsStr = [
+        `*${i18n.__("plugin.owStats.medals.total")}:* ${data.medals.total || '0'}`,
+        `*${i18n.__("plugin.owStats.medals.gold")}:* ${data.medals.gold || '0'}`,
+        `*${i18n.__("plugin.owStats.medals.silver")}:* ${data.medals.silver || '0'}`,
+        `*${i18n.__("plugin.owStats.medals.bronze")}:* ${data.medals.bronze || '0'}`
+    ];
+    var gameModeStatsStr = [
+        `*${i18n.__("plugin.owStats.gameModeStats.victories")}:* ${data.gameModeStats.victories}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.eliminations")}:* ${data.gameModeStats.eliminations}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.finalBlows")}:* ${data.gameModeStats.finalBlows}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.deaths")}:* ${data.gameModeStats.deaths}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.ePerD")}:* ${data.gameModeStats.ePerD}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.totalDmg")}:* ${data.gameModeStats.totalDmg}`,
+        `*${i18n.__("plugin.owStats.gameModeStats.totalHealing")}:* ${data.gameModeStats.totalHealing}`
+    ];
 
     var mostPHeroesStr = data.mostPHeroes.map(function(v) {
         var played = (Math.floor(v.time_played / (60 * 60) / 1000 * 100) / 100).toFixed(2); // Convert from milliseconds to hours
@@ -168,23 +183,24 @@ function getStatsEmbed(data) {
     });
 
     const embed = new Discord.RichEmbed()
-        .setTitle(`Estadísticas de Overwatch de ${data.account} (${data.gameMode})`)
+        .setTitle(i18n.__("plugin.owStats.owStatsTitle", data.account, data.gameMode))
         .setAuthor("Overwatch Info", "https://www.flaktest.com/wp-content/uploads/2017/01/owlogo.jpg")
         .setColor(3447003)
         .setThumbnail(data.avatar)
-        .setURL("https://playoverwatch.com/es-es/career/pc/eu/Hiro-2564") // TODO
+        .setURL("https://playoverwatch.com/es-es/career/pc/eu/" + data.account.replace('#', '-'))
         // Row 1
-        .addField("Información de Cuenta", data.accountStats, true)
-        .addField("Medallas", data.medals, true)
+        .addField(i18n.__("plugin.owStats.accStats.title"), accStatsStr, true)
+        .addField(i18n.__("plugin.owStats.medals.title"), medalsStr, true)
         // Row 2
-        .addField("Números", data.gameModeStats, true)
-        .addField("Héroes más usados", mostPHeroesStr, true)
+        .addField(i18n.__("plugin.owStats.gameModeStats.title"), gameModeStatsStr, true)
+        .addField(i18n.__("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)
 
     return (embed);
 }
 
-function readUserBTag() {
-    var btag = "Hiro#2564";
+function readUserBTag(userID) {
+    var btagLib = require.main.require("./lib/btag.lib.js");
+    var btag = btagLib.getBTag(userID);
     return btag;
 }
 
@@ -213,12 +229,26 @@ function compareValues(key, order = 'asc') {
     };
 }
 
+var owStatsArgs = [{
+        "tag": i18n.__("plugin.owStats.args.gameMode.tag"),
+        "desc": i18n.__("plugin.owStats.args.gameMode.desc") + "\n\n\t**" + i18n.__("argsPossibleValues") + "**\n\t\t" +
+            "`pr`: " + i18n.__("plugin.owStats.gameMode.quickMatch") + "\n\t\t" +
+            "`comp`: " + i18n.__("plugin.owStats.gameMode.competitive"),
+        "optional": true
+    },
+    {
+        "tag": i18n.__("plugin.owStats.args.btag.tag"),
+        "desc": i18n.__("plugin.owStats.args.btag.desc"),
+        "optional": true
+    }
+];
+
 var commands = [];
 var eventHandlers = [];
 
-var owStatsCmd = new Command('owstats', 'Lorem Ipsum', owStats);
+var owStatsCmd = new Command('owstats', i18n.__("plugin.owStats.desc"), owStats, 0, [], owStatsArgs);
 commands.push(owStatsCmd);
-// owstats [pr|competitiva|vincular|desvincular] [btag]
+
 var owStats = new Plugin('owStats', commands, eventHandlers);
 
 

@@ -3,50 +3,52 @@ var Plugin = require.main.require("./classes/plugin.class.js");
 var Command = require.main.require("./classes/command.class.js");
 var functions = require.main.require("./functions.js");
 var i18n = functions.i18n;
-const PersistentCollection = require('djs-collection-persistent');
-const userInfoTable = new PersistentCollection({ name: "userInfo" });
 
 // Main code section
 function linkUserBTag(fParams, args, callback) {
+    var btagLib = require.main.require("./lib/btag.lib.js");
     var userID = fParams.message.author.id;
+    var userName = fParams.message.author.username;
+
     var btag = args[0];
-    if (btag != "") {
-        setBTag(btag, userID, userInfoTable);
+    if (!btagLib.validateBTag(btag)) {
+        callback(new Error(i18n.__("plugin.manageUserBTag.link.error.notValid")));
+    } else {
+        btagLib.setBTag(btag, userID);
+        if (btagLib.getBTag(userID) == btag) {
+            callback(null, i18n.__("plugin.manageUserBTag.link.ok", userName));
+        } else {
+            callback(new Error(i18n.__("plugin.manageUserBTag.link.error.writeError", userName)));
+        }
     }
-    console.log(btag);
-    //callback(null, msg);
 }
 
+function unlinkUserBTag(fParams, args, callback) {
+    var btagLib = require.main.require("./lib/btag.lib.js");
+    var userID = fParams.message.author.id;
+    var userName = fParams.message.author.username;
+    btagLib.setBTag(null, userID);
 
-function getBTag(userID, table) {
-    // Get server data from persistance
-    var userInfo = table.get(userID);
-    var btag = typeof userInfo === 'undefined' ? null : userInfo.btag;
-
-    // Fix for empty result (no motd set yet)
-    btag = typeof btag === 'undefined' ? null : btag;
-    return btag;
+    if (btagLib.getBTag(userID) == null) {
+        callback(null, i18n.__("plugin.manageUserBTag.unlink.ok", userName));
+    } else {
+        callback(new Error(i18n.__("plugin.manageUserBTag.unlink.error", userName)));
+    }
 }
 
-function setBTag(newBTag, userID, table) {
-    // Retrieve current info
-    var userInfo = table.get(userID);
-    // Set new MotD
-    var newInfo = {};
-    // If records exists update them, else create new ones
-    if (typeof userInfo != 'undefined') newInfo = userInfo;
-    // Initialice motd object if necessary
-    newInfo.btag = newBTag;
-    // Write whole object
-    table.set(userID, newInfo);
-}
-
+var linkUserBTagArgs = [{
+    "tag": i18n.__("plugin.manageUserBTag.link.args.btag.tag"),
+    "desc": i18n.__("plugin.manageUserBTag.link.args.btag.desc"),
+    "optional": false
+}];
 
 var commands = [];
 var eventHandlers = [];
 
-var linkUserBTagCmd = new Command('vincular', i18n.__('plugin.randomMemberQuote.desc'), linkUserBTag);
+var linkUserBTagCmd = new Command('vincular', i18n.__('plugin.manageUserBTag.link.desc'), linkUserBTag, 0, [], linkUserBTagArgs);
 commands.push(linkUserBTagCmd);
+var unlinkUserBTagCmd = new Command('desvincular', i18n.__('plugin.manageUserBTag.unlink.desc'), unlinkUserBTag);
+commands.push(unlinkUserBTagCmd);
 
 var manageUserBTag = new Plugin('manageUserBTag', commands, eventHandlers);
 

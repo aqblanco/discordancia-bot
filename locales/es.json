@@ -58,11 +58,77 @@
             "arguments": "Argumentos",
             "example": "Ejemplo",
             "command": "Comando",
-            "helpSentNotification": "%s, consulta tus mensajes privados para ver la ayuda."
-        },
-        "owstats": {
+            "helpSentNotification": "%s, consulta tus mensajes privados para ver la ayuda.",
+            "noAvailableArgs": "Este comando no tiene argumentos definidos o su ayuda no existe.",
             "error": {
-                "noBTagSet": "No se indicó ningún Battle.tag válido y el usuario %s no tiene ninguno establecido por defecto."
+                "commandNotFound": "Comando no encontrado."
+            }
+        },
+        "owStats": {
+            "error": {
+                "noBTagSet": "No se indicó ningún BattleTag válido y el usuario %s no tiene ninguno establecido por defecto."
+            },
+            "desc": "Muestra estadísticas sobre la cuenta de Overwatch especificada.",
+            "accStats": {
+                "level": "Nivel",
+                "rank": "Rango",
+                "title": "Información de la cuenta"
+            },
+            "medals": {
+                "total": "Total",
+                "gold": "Oro",
+                "silver": "Plata",
+                "bronze": "Bronce",
+                "title": "Medallas"
+            },
+            "gameModeStats": {
+                "victories": "Victorias",
+                "eliminations": "Eliminaciones",
+                "finalBlows": "Golpes de gracia",
+                "deaths": "Muertes",
+                "ePerD": "Eliminaciones/Muertes",
+                "totalDmg": "Daño total",
+                "totalHealing": "Sanación total",
+                "title": "Números"
+            },
+            "owStatsTitle": "Estadísticas de Overwatch de %s (%s)",
+            "mostUsedHeroes": {
+                "title": "Héroes más usados"
+            },
+            "gameMode": {
+                "quickMatch": "Partida Rápida",
+                "competitive": "Competitivo"
+            },
+            "args": {
+                "gameMode": {
+                    "tag": "modo",
+                    "desc": "Modo de juego sobre el que ver las estadísticas. Si no se especifica, se verán las de Partida Rápida."
+                },
+                "btag": {
+                    "tag": "btag",
+                    "desc": "BattleTag que se usará para la consulta de estadísticas. Si no se especifica, se intentará consultar el que el usuario haya vinculado a su cuenta."
+                }
+            }
+        },
+        "manageUserBTag": {
+            "link": {
+                "desc": "Asocia un BattleTag a tu usuario en este servidor.",
+                "ok": "BattleTag vinculado correctamente al usuario %s.",
+                "error": {
+                    "notValid": "El BattleTag introducido no es válido.",
+                    "writeError": "Ocurrió un error al vincular el BattleTag al usuario %s."
+                },
+                "args": {
+                    "btag": {
+                        "tag": "btag",
+                        "desc": "BattleTag a vincular a la cuenta del usuario en este servidor."
+                    }
+                }
+            },
+            "unlink": {
+                "desc": "Elimina el BattleTag asociado a tu usuario en este servidor.",
+                "ok": "BattleTag desvinculado correctamente del usuario %s.",
+                "error": "Ocurrió un error al desvincular el BattleTag del usuario %s."
             }
         }
     }

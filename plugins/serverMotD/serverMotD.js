@@ -5,10 +5,11 @@ var EventHandler = require.main.require("./classes/event-handler.class.js");
 var functions = require.main.require("./functions.js");
 var i18n = functions.i18n;
 
-const PersistentCollection = require('djs-collection-persistent');
+//const PersistentCollection = require('djs-collection-persistent');
+var dataConnections = require.main.require("./dataConnections.js");
 // Tables
-const connectionsTable = new PersistentCollection({ name: "userInfo" });
-const motdTable = new PersistentCollection({ name: "serverInfo" });
+const connectionsTable = dataConnections.userInfoTable; /*new PersistentCollection({ name: "userInfo" });*/
+const motdTable = dataConnections.serverInfoTable; /*new PersistentCollection({ name: "serverInfo" });*/
 
 
 function onConnectWelcome(oldMember, newMember) {
@@ -31,7 +32,7 @@ function onConnectWelcome(oldMember, newMember) {
                 var daysLastChange = daysInterval;
             }
 
-            // Message of the day is set, show it in addition to welcome message
+            // Message of the day is set, show it with welcome message
             var changed = motdChanged(lastCon, motd.timestamp);
             // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
             if (changed || daysLastChange >= daysInterval) {
