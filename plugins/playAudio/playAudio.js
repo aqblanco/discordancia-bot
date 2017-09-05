@@ -20,7 +20,7 @@ function playSound(fParams, args, callback) {
                     var file = "";
                     var rName = args[0];
                     //var resources = [{'name': 'pelele', 'file': 'junkrat-pelele.ogg'}];
-                    file = rm.getResourcePath(rName);
+                    file = rm.getResourcePath(rName, 'audio');
                     console.log(i18n.__("plugin.playAudio.log.playingFile", file));
                     // file not empty check
                     const dispatcher = connection.playFile(file);
@@ -50,7 +50,7 @@ function playSound(fParams, args, callback) {
 
 var playAudioArgs = [{
     "tag": i18n.__("plugin.playAudio.args.audio.tag"),
-    "desc": i18n.__("plugin.playAudio.args.audio.desc") + "\n\n\t**" + i18n.__("argsPossibleValues") + "**\n\t\t`" + rm.getResourceList().join("`\n\t\t`") + "`",
+    "desc": i18n.__("plugin.playAudio.args.audio.desc") + "\n\n\t**" + i18n.__("argsPossibleValues") + "**\n\t\t`" + rm.getResourceList('audio').join("`\n\t\t`") + "`",
     "optional": false
 }];
 
