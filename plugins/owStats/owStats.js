@@ -12,31 +12,44 @@ function owStats(fParams, args, callback) {
     var request = null;
 
     // Determine which btag to query
-    // Check if the first argument is a valid btag
-    if (validateBTag(args[0])) {
-        btag = args[0];
-        // Check if the second argument is a valid btag
-    } else if (validateBTag(args[1])) {
-        btag = args[1];
-        request = args[0];
+    const firstIsValidBTag = validateBTag(args[0]);
+    const secondIsValidBTag = validateBTag(args[1]);
+    if (firstIsValidBTag || secondIsValidBTag) {
+        // Check if the first argument is a valid btag
+        if (firstIsValidBTag) {
+            btag = args[0];
+            // Check if the second argument is a valid btag
+        } else if (secondIsValidBTag) {
+            btag = args[1];
+            request = args[0];
+        }
+        // If btag is set, get data for it
+        if (btag != null) {
+            getPlayerStats(btag, request, callback);
+        } else {
+            callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+        }
+    } else {
         // No (valid) btag, try to get user's btag from persistance
-    } else {
         var userID = fParams.message.author.id;
-        btag = readUserBTag(userID);
-        request = args[0];
-    }
+        readUserBTag(userID)
+        .then(user => {
+            request = args[0];
+            // If btag is set, get data for it
+            btag = user.btag;
 
-    // If btag is set, get data for it
-    if (btag != null) {
-        getPlayerStats(btag, request, callback);
-    } else {
-        callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+            if (btag != null) { 
+                getPlayerStats(btag, request, callback);
+            } else {
+                callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+            }
+        });
     }
 }
 
 function getPlayerStats(btag, request, callback) {
     owjs
-        .getAll('pc', 'eu', btag.replace('#', '-'), 'es-es')
+        .getAll('pc', 'eu', btag.replace('#', '-'), false, 'es-es')
         .then((data) => {
             //console.dir(data.quickplay.heroes, { depth: 2, colors: true });
             data.profile.btag = btag;
@@ -49,6 +62,9 @@ function getPlayerStats(btag, request, callback) {
                     var statsEmbed = getQPStatsEmbed(data);
             }
             callback(null, statsEmbed, true);
+        })
+        .catch(e => {
+            throw(e);
         });
 }
 
@@ -182,7 +198,7 @@ function getStatsEmbed(data) {
         return `*${name}:* ${played} horas`;
     });
 
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
         .setTitle(i18n.__("plugin.owStats.owStatsTitle", data.account, data.gameMode))
         .setAuthor("Overwatch Info", "https://www.flaktest.com/wp-content/uploads/2017/01/owlogo.jpg")
         .setColor(3447003)
@@ -192,16 +208,15 @@ function getStatsEmbed(data) {
         .addField(i18n.__("plugin.owStats.accStats.title"), accStatsStr, true)
         .addField(i18n.__("plugin.owStats.medals.title"), medalsStr, true)
         // Row 2
-        .addField(i18n.__("plugin.owStats.gameModeStats.title"), gameModeStatsStr, true)
-        .addField(i18n.__("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)
+        /*.addField(i18n.__("plugin.owStats.gameModeStats.title"), gameModeStatsStr, true)
+        .addField(i18n.__("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)*/
 
     return (embed);
 }
 
 function readUserBTag(userID) {
     var btagLib = require.main.require("./lib/btag.lib.js");
-    var btag = btagLib.getBTag(userID);
-    return btag;
+    return btagLib.getBTag(userID);
 }
 
 function compareValues(key, order = 'asc') {

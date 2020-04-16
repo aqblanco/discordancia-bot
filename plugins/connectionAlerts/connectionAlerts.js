@@ -5,7 +5,7 @@ var functions = require.main.require("./functions.js");
 var i18n = functions.i18n;
 
 function connectionAlert(oldMember, newMember) {
-    var currentStatus = newMember.guild.presences.get(newMember.user.id).status;
+    /*var currentStatus = newMember.guild.presences.get(newMember.user.id).status;
     var oldStatus = oldMember.frozenPresence.status;
 
     // Came from offline status
@@ -16,7 +16,7 @@ function connectionAlert(oldMember, newMember) {
     // Gone to offline status
     if (currentStatus === 'offline') {
         console.log(i18n.__("plugin.connectionAlerts.userDisconnected", newMember.user.username, newMember.guild.name));
-    }
+    }*/
 }
 
 var commands = [];

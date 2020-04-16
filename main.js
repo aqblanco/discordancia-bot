@@ -13,32 +13,36 @@ var botObj = new Bot(cmdPrefix);
 // from Discord _after_ ready is emitted
 client.on('ready', function() {
     client.user.setUsername(config.botConfig.username);
-    client.user.setGame('Ayuda: ' + cmdPrefix + ' ayuda');
+    client.user.setActivity('Ayuda: ' + cmdPrefix + ' ayuda');
     loadPlugins(botObj, client);
     console.log(i18n.__('botStarted'));
 });
 
 // Create an event listener for new guild members
-client.on('guildMemberAdd', function(member) {
+/*client.on('guildMemberAdd', function(member) {
     // Send the message to the guilds default channel (usually #general), mentioning the member
     member.guild.defaultChannel.send(`Welcome to the server, ${member}!`);
 
     // If you want to send the message to a designated channel on a server instead
     // you can do the following:
-    const channel = member.guild.channels.find('name', 'member-log');
+    const channel = member.guild.channels.find(channel => channel.name === 'member-log');
     // Do nothing if the channel wasn't found on this server
     if (!channel) return;
     // Send the message, mentioning the member
     channel.send(`Welcome to the server, ${member}`);
-});
+});*/
 
 // Create an event listener for messages
 client.on('message', function(message) {
+    if (message.author.bot) {
+        // Do nothing
+        return;
+    }
     var botUser = client.user.username;
     var firstEle = message.content.split(/\s+/g)[0];
 
     var prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
-    var mentionPresent = message.mentions.users.find("username", botUser) !== null;
+    var mentionPresent = message.mentions.users.find(user => user.username === botUser) !== null;
     var isDM = message.channel.type == 'dm';
 
     // Reply when using bot prefix or mentions, ignore direct messages, as it's impossible to determine the server

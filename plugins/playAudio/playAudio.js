@@ -13,19 +13,22 @@ function playSound(fParams, args, callback) {
     var message = fParams.message;
     if (args.length > 0) {
         // Only try to join the sender's voice channel if they are in one themselves
-        if (message.member.voiceChannel) {
-            message.member.voiceChannel.join()
+        if (message.member.voice.channel) {
+            message.member.voice.channel.join()
                 .then(connection => { // Connection is an instance of VoiceConnection
                     //message.reply('I have successfully connected to the channel!');
                     var file = "";
                     var rName = args[0];
                     //var resources = [{'name': 'pelele', 'file': 'junkrat-pelele.ogg'}];
                     file = rm.getResourcePath(rName, 'audio');
-                    console.log(i18n.__("plugin.playAudio.log.playingFile", file));
                     // file not empty check
-                    const dispatcher = connection.playFile(file);
+                    const dispatcher = connection.play(file);
+                    dispatcher.on('start', () => {
+                        console.log(i18n.__("plugin.playAudio.log.playingFile", file));
+                    });
                     dispatcher.on('end', () => {
                         connection.disconnect();
+                        return
                     });
                     dispatcher.on('error', e => {
                         // Catch any errors that may arise

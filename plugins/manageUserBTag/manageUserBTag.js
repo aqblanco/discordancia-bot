@@ -14,12 +14,13 @@ function linkUserBTag(fParams, args, callback) {
     if (!btagLib.validateBTag(btag)) {
         callback(new Error(i18n.__("plugin.manageUserBTag.link.error.notValid")));
     } else {
-        btagLib.setBTag(btag, userID);
-        if (btagLib.getBTag(userID) == btag) {
+        btagLib.setBTag(btag, userID)
+        .then (() => {
             callback(null, i18n.__("plugin.manageUserBTag.link.ok", userName));
-        } else {
+        })
+        .catch(() => {
             callback(new Error(i18n.__("plugin.manageUserBTag.link.error.writeError", userName)));
-        }
+        });
     }
 }
 
@@ -27,13 +28,15 @@ function unlinkUserBTag(fParams, args, callback) {
     var btagLib = require.main.require("./lib/btag.lib.js");
     var userID = fParams.message.author.id;
     var userName = fParams.message.author.username;
-    btagLib.setBTag(null, userID);
+    var btag = null;
 
-    if (btagLib.getBTag(userID) == null) {
+    btagLib.setBTag(btag, userID)
+    .then (() => {
         callback(null, i18n.__("plugin.manageUserBTag.unlink.ok", userName));
-    } else {
+    })
+    .catch(() => {
         callback(new Error(i18n.__("plugin.manageUserBTag.unlink.error", userName)));
-    }
+    });
 }
 
 var linkUserBTagArgs = [{

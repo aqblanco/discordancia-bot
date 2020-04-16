@@ -8,128 +8,96 @@ var i18n = functions.i18n;
 //const PersistentCollection = require('djs-collection-persistent');
 var dataConnections = require.main.require("./dataConnections.js");
 // Tables
-const connectionsTable = dataConnections.userInfoTable; /*new PersistentCollection({ name: "userInfo" });*/
-const motdTable = dataConnections.serverInfoTable; /*new PersistentCollection({ name: "serverInfo" });*/
+const connectionsTable = dataConnections.userServerInfotable; /*new PersistentCollection({ name: "userInfo" });*/
+const motdTable = dataConnections.motdInfoTable; /*new PersistentCollection({ name: "serverInfo" });*/
 
 
 function onConnectWelcome(oldMember, newMember) {
     const daysInterval = 7; // Interval of days to show MotD if it has not changed
     // Trigger when coming from offline
-    if (oldMember.frozenPresence.status === 'offline') {
-        var lastCon = getUserLastConnection(newMember.user.id, newMember.guild.id, connectionsTable);
-        setUserLastConnection(newMember.user.id, newMember.guild.id, new Date(), connectionsTable);
-        var motd = getMotD(newMember.guild.id, motdTable);
-        if (motd != null) {
-            if (lastCon != null) {
-                // Not first connection, check message changed, or previous connection not in the same day
-                var lastConDate = new Date(lastCon);
-                /*var sameDay = lastConDate.getDate() == new Date().getDate();
-                var sameMonth = lastConDate.getMonth() == new Date().getMonth();
-                var sameYear = lastConDate.getYear() == new Date().getYear();*/
-                var daysLastChange = daysDifference(lastConDate, new Date());
-            } else {
-                // First connection, force showing motd
-                var daysLastChange = daysInterval;
+    if (!oldMember || oldMember.status === 'offline') {
+        let lastCon = null;
+        // Get user last connection to server
+        connectionsTable.findOne({ where: { user_id: newMember.user.id, server_id: newMember.guild.id } })
+        .then(data => {
+            if (data) {
+                lastCon = data.last_connection;
             }
+            // Update last connection with current date
+            return connectionsTable.upsert({ user_id: newMember.user.id, server_id: newMember.guild.id, last_connection: new Date().getTime()})
+        })
+        .then(() => {
+            // Get MotD
+            return motdTable.findOne({ where: { server_id:  newMember.guild.id } });
+        })
+        .then((data) => {
+            if (data != null) {
+                var motd = data.motd;
+                if (lastCon != null) {
+                    // Not first connection, check message changed, or previous connection not in the same day
+                    var lastConDate = new Date(lastCon);
+                    var daysLastChange = daysDifference(lastConDate, new Date());
+                } else {
+                    // First connection, force showing motd
+                    var daysLastChange = daysInterval;
+                }
 
-            // Message of the day is set, show it with welcome message
-            var changed = motdChanged(lastCon, motd.timestamp);
-            // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
-            if (changed || daysLastChange >= daysInterval) {
-                // PM with welcome message to non-bot users
-                if (!newMember.user.bot) {
-                    newMember.user.send(i18n.__("plugin.serverMotD.welcomeMsg", newMember.user.username, newMember.guild.name))
-                        .then(m => newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd.message}`))
+                // Message of the day is set, show it with welcome message
+
+                var changed = motdChanged(lastCon, data.updatedAt);
+                // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
+                if (changed || daysLastChange >= daysInterval) {
+                    // PM with welcome message to non-bot users
+                    if (!newMember.user.bot) {
+                        newMember.user.send("***" + i18n.__("plugin.serverMotD.motd") + `***: ${motd}`)
                         .then(m => console.log(`MotD enviado al usuario ${newMember.user.username}`))
                         .catch(console.error);
+                    }
                 }
             }
-        }
+        });
     }
 }
 
 function motd(fParams, args, callback) {
-    var message = fParams.message;
-    var res = "";
+    let message = fParams.message;
+    let motd = '';
 
     // Display current MotD
     if (args.length == 0) {
-        var motdObject = getMotD(message.guild.id, motdTable);
-        res = motdObject != null ? motdObject.message : null;
+        motdTable.findOne({ where: { server_id: message.guild.id } })
+        .then(data => {
+            if (data) {
+                motd = data.motd;  
+            }
+            displayMotd(motd, callback);
+        });
         // Update MotD
     } else {
         // Create a string from the args, that is, the motd
-        res = args.join(' ');
-        setMotD(res, message.guild.id, motdTable);
+        motd = args.join(' ');
+        motdTable.upsert({ server_id: message.guild.id, motd: motd })
+        .then(() => {
+            displayMotd(motd, callback);
+        })
     }
+}
 
-    if (res != null) {
+function displayMotd(msg, callback) {
+    
+    if (msg != null && msg != '') {
         embedMsg = {
             author: {
                 name: i18n.__("plugin.serverMotD.motd"),
                 icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
             },
             color: 3447003,
-            description: res
+            description: msg
         };
         callback(null, embedMsg, true);
     } else {
         callback(new Error(i18n.__("plugin.serverMotD.error.noMotDSet") /*"No MotD set."*/ ));
     }
-}
-
-function getUserLastConnection(userID, server, table) {
-    // Get last connection from persistance
-    var usersInfo = table.get(server);
-    // No users entries
-    usersInfo = typeof usersInfo === 'undefined' ? null : usersInfo;
-    var lastConnection = null;
-    if (usersInfo != null) {
-        // Set to null when no user entry
-        lastConnection = typeof usersInfo[userID] === 'undefined' ? null : usersInfo[userID].lastC;
-        // Fix for empty result (first connection)
-        lastConnection = typeof lastConnection === 'undefined' ? null : lastConnection;
-    }
-    return lastConnection;
-}
-
-function setUserLastConnection(userID, server, lastC, table) {
-    // Retrieve current info
-    var userInfo = table.get(server);
-    // Set new MotD
-    var newInfo = {};
-    // If records exists update them, else create new ones
-    if (typeof userInfo != 'undefined') newInfo = userInfo;
-    // Initialice motd object if necessary
-    newInfo[userID] = newInfo[userID] || {};
-    newInfo[userID].lastC = lastC.getTime();
-    // Write whole object
-    table.set(server, newInfo);
-}
-
-function getMotD(server, table) {
-    // Get server data from persistance
-    var serverInfo = table.get(server);
-    var motd = typeof serverInfo === 'undefined' ? null : serverInfo.motd;
-
-    // Fix for empty result (no motd set yet)
-    motd = typeof motd === 'undefined' ? null : motd;
-    return motd;
-}
-
-function setMotD(msg, server, table) {
-    // Retrieve current info
-    var serverInfo = table.get(server);
-    // Set new MotD
-    var newInfo = {};
-    // If records exists update them, else create new ones
-    if (typeof serverInfo != 'undefined') newInfo = serverInfo;
-    // Initialice motd object if necessary
-    newInfo.motd = newInfo.motd || {};
-    newInfo.motd.message = msg;
-    newInfo.motd.timestamp = new Date().getTime();
-    // Write whole object
-    table.set(server, newInfo);
 }
 
 function motdChanged(lastLoginDate, motdChangeDate) {
