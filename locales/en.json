@@ -1,1 +1,134 @@
-{}
+{
+    "botStarted": "Bot initialized correctly...\n",
+    "argsPossibleValues": "Possible values:",
+    "plugin": {
+        "randomMemberQuote": {
+            "desc": "Send a random quote."
+        },
+        "playAudio": {
+            "log": {
+                "playingFile": "Playing file: %s"
+            },
+            "desc": "Play requested audio on your current voice channel.",
+            "error": {
+                "noVoiceChannel": "First you need to join a voice channel.",
+                "noAudio": "No audio selected."
+            },
+            "args": {
+                "audio": {
+                    "desc": "Name of the audio to be played.",
+                    "tag": "resource"
+                }
+            }
+        },
+        "warcraftLogs": {
+            "desc": "Get the lastest logs from Warcraft Logs",
+            "logDate": "Logged at **%s** by **%s**",
+            "atWarcraftLogs": "%s at WarCraft Logs"
+        },
+        "connectionAlerts": {
+            "userDisconnected": "%s has gone offline from %s server.",
+            "userConnected": "%s has connected to %s server."
+        },
+        "serverMotD": {
+            "welcomeMsg": "¡Welcome to server, %s! Enjoy your time at %s!",
+            "motd": "Message of the Day",
+            "args": {
+                "newMessage": {
+                    "tag": "newMessage",
+                    "desc": "Set the Message of the Day."
+                }
+            },
+            "desc": "Show the Message of the Day. If a message is provided, it's set as the new MotD.",
+            "error": {
+                "noMotDSet": "No Message of the Day set."
+            }
+        },
+        "help": {
+            "args": {
+                "command": {
+                    "tag": "command",
+                    "desc": "Name of the command to show its extended help."
+                }
+            },
+            "desc": "Show the list of available commands. If a command is specified, its extended help will be shown",
+            "help": "Help",
+            "optional": "Optional",
+            "description": "Description",
+            "arguments": "Arguments",
+            "example": "Example",
+            "command": "Command",
+            "helpSentNotification": "%s, check your private messages for help.",
+            "noAvailableArgs": "This command has no defined arguments or its help doesn't exist.",
+            "error": {
+                "commandNotFound": "Command not found."
+            }
+        },
+        "owStats": {
+            "error": {
+                "noBTagSet": "No valid BattleTag specified and %s has no default one set."
+            },
+            "desc": "Show statistics about Overwatch's account specified.",
+            "accStats": {
+                "level": "Level",
+                "rank": "Rank",
+                "title": "Account information"
+            },
+            "medals": {
+                "total": "Total",
+                "gold": "Gold",
+                "silver": "Silver",
+                "bronze": "Bronze",
+                "title": "Medals"
+            },
+            "gameModeStats": {
+                "victories": "Victories",
+                "eliminations": "Eliminations",
+                "finalBlows": "Final blows",
+                "deaths": "Deaths",
+                "ePerD": "Eliminations/Deaths",
+                "totalDmg": "Total Damage",
+                "totalHealing": "Total Healing",
+                "title": "Stats"
+            },
+            "owStatsTitle": "Overwatch stats for %s (%s)",
+            "mostUsedHeroes": {
+                "title": "Most Used Heroes"
+            },
+            "gameMode": {
+                "quickMatch": "Quick Play",
+                "competitive": "Competitive"
+            },
+            "args": {
+                "gameMode": {
+                    "tag": "mode",
+                    "desc": "Game mode to see stats about. Quick Play stats will be shown by default."
+                },
+                "btag": {
+                    "tag": "btag",
+                    "desc": "BattleTag to check statistics about. If not present, the one the user may have linked to his/her account will be checked."
+                }
+            }
+        },
+        "manageUserBTag": {
+            "link": {
+                "desc": "Link a BattleTag to your user in this server.",
+                "ok": "BattleTag correctly linked to %s.",
+                "error": {
+                    "notValid": "Specified BattleTag is not right.",
+                    "writeError": "An error occured when trying to link BattleTag to %s."
+                },
+                "args": {
+                    "btag": {
+                        "tag": "btag",
+                        "desc": "BattleTag to link to the user account in this server."
+                    }
+                }
+            },
+            "unlink": {
+                "desc": "Unlink a BattleTag to your user in this server.",
+                "ok": "BattleTag correctly linked from %s.",
+                "error": "An error occured when trying to link BattleTag from %s."
+            }
+        }
+    }
