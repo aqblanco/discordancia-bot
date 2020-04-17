@@ -1,85 +1,103 @@
-var Plugin = require.main.require("./classes/plugin.class.js");
-var Command = require.main.require("./classes/command.class.js");
-var functions = require.main.require("./functions.js");
-var owjs = require('overwatch-js');
+const Plugin = require.main.require("./classes/plugin.class.js");
+const Command = require.main.require("./classes/command.class.js");
+const functions = require.main.require("./functions.js");
+const owjs = require('overwatch-js');
+const i18n = functions.i18n;
 
-var i18n = functions.i18n;
-
-function owStats(fParams, args, callback) {
-    var btagLib = require.main.require("./lib/btag.lib.js");
-    var validateBTag = btagLib.validateBTag;
-    var btag = null;
-    var request = null;
+function owStats(fParams, args) {
+    const btagLib = require.main.require("./lib/btag.lib.js");
+    const validateBTag = btagLib.validateBTag;
+    let btag = null;
+    let request = null;
 
     // Determine which btag to query
     const firstIsValidBTag = validateBTag(args[0]);
     const secondIsValidBTag = validateBTag(args[1]);
-    if (firstIsValidBTag || secondIsValidBTag) {
-        // Check if the first argument is a valid btag
-        if (firstIsValidBTag) {
-            btag = args[0];
-            // Check if the second argument is a valid btag
-        } else if (secondIsValidBTag) {
-            btag = args[1];
-            request = args[0];
-        }
-        // If btag is set, get data for it
-        if (btag != null) {
-            getPlayerStats(btag, request, callback);
-        } else {
-            callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
-        }
-    } else {
-        // No (valid) btag, try to get user's btag from persistance
-        var userID = fParams.message.author.id;
-        readUserBTag(userID)
-        .then(user => {
-            request = args[0];
-            // If btag is set, get data for it
-            btag = user.btag;
 
-            if (btag != null) { 
-                getPlayerStats(btag, request, callback);
-            } else {
-                callback(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+    return new Promise ((resolve, reject) => {
+        if (firstIsValidBTag || secondIsValidBTag) {
+            // Check if the first argument is a valid btag
+            if (firstIsValidBTag) {
+                btag = args[0];
+                // Check if the second argument is a valid btag
+            } else if (secondIsValidBTag) {
+                btag = args[1];
+                request = args[0];
             }
-        });
-    }
+            // If btag is set, get data for it
+            if (btag != null) {
+                getPlayerStats(btag, request)
+                .then((result) => {
+                    resolve(result);
+                })
+                .catch((e) => {
+                    reject(e);
+                });
+            } else {
+                reject(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+            }
+        } else {
+            // No (valid) btag, try to get user's btag from persistance
+            let userID = fParams.message.author.id;
+            readUserBTag(userID)
+            .then(user => {
+                request = args[0];
+                // If btag is set, get data for it
+                btag = user.btag;
+
+                if (btag != null) { 
+                    getPlayerStats(btag, request)
+                    .then((result) => {
+                        resolve(result);
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+                } else {
+                    reject(new Error(i18n.__("plugin.owStats.error.noBTagSet", fParams.message.author.username)))
+                }
+            });
+        }
+    });
 }
 
-function getPlayerStats(btag, request, callback) {
-    owjs
+function getPlayerStats(btag, request) {
+    return new Promise ((resolve, reject) => {
+        owjs
         .getAll('pc', 'eu', btag.replace('#', '-'), false, 'es-es')
         .then((data) => {
             //console.dir(data.quickplay.heroes, { depth: 2, colors: true });
             data.profile.btag = btag;
+            let statsEmbed;
             switch (request) {
                 case 'comp':
-                    var statsEmbed = getCompStatsEmbed(data);
+                    statsEmbed = getCompStatsEmbed(data);
                     break;
                 case 'pr':
                 default:
-                    var statsEmbed = getQPStatsEmbed(data);
+                    statsEmbed = getQPStatsEmbed(data);
             }
-            callback(null, statsEmbed, true);
+            resolve(statsEmbed);
         })
         .catch(e => {
-            throw(e);
+            reject(e);
         });
+    });
+    
 }
 
 function getMostPlayedHeroes(n, heroes) {
     // Add 'name' key
-    for (var key in heroes) {
+    for (let key in heroes) {
         // skip loop if the property is from prototype
         if (!heroes.hasOwnProperty(key)) continue;
 
-        var obj = heroes[key];
+        let obj = heroes[key];
         obj['name'] = key;
     }
 
     // Convert object to array
-    var heroesArray = Object.keys(heroes).map((key) => heroes[key]);
+    let heroesArray = Object.keys(heroes).map((key) => heroes[key]);
     // Sort by time played
     heroesArray = heroesArray.sort(compareValues('time_played', 'desc'));
     // n must be greater than 0
@@ -91,22 +109,22 @@ function getMostPlayedHeroes(n, heroes) {
 }
 
 function getQPStatsEmbed(pData) {
-    var heroes = pData.quickplay.heroes;
+    let heroes = pData.quickplay.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
-    var mostPHeroes = getMostPlayedHeroes(5, heroes);
+    let mostPHeroes = getMostPlayedHeroes(5, heroes);
 
-    var accStats = {
+    let accStats = {
         level: `${pData.profile.tier}${pData.profile.level}`,
         rank: pData.profile.rank
     };
 
-    var medals = {
+    let medals = {
         total: pData.quickplay.global.medals,
         gold: pData.quickplay.global.medals_gold,
         silver: pData.quickplay.global.medals_silver,
         bronze: pData.quickplay.global.medals_bronze
     };
-    var quickPlayStats = {
+    let quickPlayStats = {
         victories: pData.quickplay.global.games_won,
         eliminations: pData.quickplay.global.eliminations,
         finalBlows: pData.quickplay.global.final_blows,
@@ -116,7 +134,7 @@ function getQPStatsEmbed(pData) {
         totalHealing: pData.quickplay.global.healing_done
     };
 
-    var data = {
+    let data = {
         account: pData.profile.btag,
         gameMode: i18n.__("plugin.owStats.gameMode.quickMatch"),
         avatar: pData.profile.avatar,
@@ -130,21 +148,21 @@ function getQPStatsEmbed(pData) {
 }
 
 function getCompStatsEmbed(pData) {
-    var heroes = pData.quickplay.heroes;
+    let heroes = pData.quickplay.heroes;
     //console.log(getMostPlayedHeroes(5, heroes));
-    var mostPHeroes = getMostPlayedHeroes(5, heroes);
+    let mostPHeroes = getMostPlayedHeroes(5, heroes);
 
-    var accStats = {
+    let accStats = {
         level: `${pData.profile.tier}${pData.profile.level}`,
         rank: pData.profile.rank
     };
-    var medals = {
+    let medals = {
         total: pData.competitive.global.medals,
         gold: pData.competitive.global.medals_gold,
         silver: pData.competitive.global.medals_silver,
         bronze: pData.competitive.global.medals_bronze
     };
-    var competitiveStats = {
+    let competitiveStats = {
         victories: pData.competitive.global.games_won,
         eliminations: pData.competitive.global.eliminations,
         finalBlows: pData.competitive.global.final_blows,
@@ -154,7 +172,7 @@ function getCompStatsEmbed(pData) {
         totalHealing: pData.competitive.global.healing_done
     };
     console.log(pData.profile);
-    var data = {
+    let data = {
         account: pData.profile.btag,
         gameMode: i18n.__("plugin.owStats.gameMode.competitive"),
         avatar: pData.profile.avatar,
@@ -170,17 +188,17 @@ function getCompStatsEmbed(pData) {
 function getStatsEmbed(data) {
     const Discord = require("discord.js");
 
-    var accStatsStr = [
+    let accStatsStr = [
         `*${i18n.__("plugin.owStats.accStats.level")}:* ${data.accountStats.level}`,
         `*${i18n.__("plugin.owStats.accStats.rank")}:* ${data.accountStats.rank || '-'}`
     ];
-    var medalsStr = [
+    let medalsStr = [
         `*${i18n.__("plugin.owStats.medals.total")}:* ${data.medals.total || '0'}`,
         `*${i18n.__("plugin.owStats.medals.gold")}:* ${data.medals.gold || '0'}`,
         `*${i18n.__("plugin.owStats.medals.silver")}:* ${data.medals.silver || '0'}`,
         `*${i18n.__("plugin.owStats.medals.bronze")}:* ${data.medals.bronze || '0'}`
     ];
-    var gameModeStatsStr = [
+    let gameModeStatsStr = [
         `*${i18n.__("plugin.owStats.gameModeStats.victories")}:* ${data.gameModeStats.victories}`,
         `*${i18n.__("plugin.owStats.gameModeStats.eliminations")}:* ${data.gameModeStats.eliminations}`,
         `*${i18n.__("plugin.owStats.gameModeStats.finalBlows")}:* ${data.gameModeStats.finalBlows}`,
@@ -190,9 +208,9 @@ function getStatsEmbed(data) {
         `*${i18n.__("plugin.owStats.gameModeStats.totalHealing")}:* ${data.gameModeStats.totalHealing}`
     ];
 
-    var mostPHeroesStr = data.mostPHeroes.map(function(v) {
-        var played = (Math.floor(v.time_played / (60 * 60) / 1000 * 100) / 100).toFixed(2); // Convert from milliseconds to hours
-        var name = v.name;
+    let mostPHeroesStr = data.mostPHeroes.map(function(v) {
+        let played = (Math.floor(v.time_played / (60 * 60) / 1000 * 100) / 100).toFixed(2); // Convert from milliseconds to hours
+        let name = v.name;
         name = name.replace('_', ' ');
         name = name.charAt(0).toUpperCase() + name.substring(1);
         return `*${name}:* ${played} horas`;
@@ -215,7 +233,7 @@ function getStatsEmbed(data) {
 }
 
 function readUserBTag(userID) {
-    var btagLib = require.main.require("./lib/btag.lib.js");
+    let btagLib = require.main.require("./lib/btag.lib.js");
     return btagLib.getBTag(userID);
 }
 
@@ -244,7 +262,7 @@ function compareValues(key, order = 'asc') {
     };
 }
 
-var owStatsArgs = [{
+let owStatsArgs = [{
         "tag": i18n.__("plugin.owStats.args.gameMode.tag"),
         "desc": i18n.__("plugin.owStats.args.gameMode.desc") + "\n\n\t**" + i18n.__("argsPossibleValues") + "**\n\t\t" +
             "`pr`: " + i18n.__("plugin.owStats.gameMode.quickMatch") + "\n\t\t" +
@@ -258,14 +276,14 @@ var owStatsArgs = [{
     }
 ];
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var owStatsCmd = new Command('owstats', i18n.__("plugin.owStats.desc"), owStats, 0, [], owStatsArgs);
+let owStatsCmd = new Command('owstats', 'Overwatch Stats', i18n.__("plugin.owStats.desc"), owStats, 0, [], owStatsArgs);
 commands.push(owStatsCmd);
 
-var owStats = new Plugin('owStats', commands, eventHandlers);
+let owStatsPlugin = new Plugin('owStats', commands, eventHandlers);
 
 
 // Exports section
-module.exports = owStats;
+module.exports = owStatsPlugin;

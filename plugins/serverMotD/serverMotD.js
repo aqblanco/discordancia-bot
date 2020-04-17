@@ -1,15 +1,14 @@
-var Plugin = require.main.require("./classes/plugin.class.js");
-var Command = require.main.require("./classes/command.class.js");
-var EventHandler = require.main.require("./classes/event-handler.class.js");
+const Plugin = require.main.require("./classes/plugin.class.js");
+const Command = require.main.require("./classes/command.class.js");
+const EventHandler = require.main.require("./classes/event-handler.class.js");
 
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
-//const PersistentCollection = require('djs-collection-persistent');
-var dataConnections = require.main.require("./dataConnections.js");
+const dataConnections = require.main.require("./dataConnections.js");
 // Tables
-const connectionsTable = dataConnections.userServerInfotable; /*new PersistentCollection({ name: "userInfo" });*/
-const motdTable = dataConnections.motdInfoTable; /*new PersistentCollection({ name: "serverInfo" });*/
+const connectionsTable = dataConnections.userServerInfotable;
+const motdTable = dataConnections.motdInfoTable;
 
 
 function onConnectWelcome(oldMember, newMember) {
@@ -32,19 +31,20 @@ function onConnectWelcome(oldMember, newMember) {
         })
         .then((data) => {
             if (data != null) {
-                var motd = data.motd;
+                let motd = data.motd;
+                let daysLastChange;
                 if (lastCon != null) {
                     // Not first connection, check message changed, or previous connection not in the same day
-                    var lastConDate = new Date(lastCon);
-                    var daysLastChange = daysDifference(lastConDate, new Date());
+                    let lastConDate = new Date(lastCon);
+                    daysLastChange = daysDifference(lastConDate, new Date());
                 } else {
                     // First connection, force showing motd
-                    var daysLastChange = daysInterval;
+                    daysLastChange = daysInterval;
                 }
 
                 // Message of the day is set, show it with welcome message
 
-                var changed = motdChanged(lastCon, data.updatedAt);
+                let changed = motdChanged(lastCon, data.updatedAt);
                 // Check if the MotD changed since last connection or user's lastest connection wasn't on the same day
                 if (changed || daysLastChange >= daysInterval) {
                     // PM with welcome message to non-bot users
@@ -59,49 +59,65 @@ function onConnectWelcome(oldMember, newMember) {
     }
 }
 
-function motd(fParams, args, callback) {
+function motd(fParams, args) {
     let message = fParams.message;
     let motd = '';
-
-    // Display current MotD
-    if (args.length == 0) {
-        motdTable.findOne({ where: { server_id: message.guild.id } })
-        .then(data => {
-            if (data) {
-                motd = data.motd;  
-            }
-            displayMotd(motd, callback);
-        });
-        // Update MotD
-    } else {
-        // Create a string from the args, that is, the motd
-        motd = args.join(' ');
-        motdTable.upsert({ server_id: message.guild.id, motd: motd })
-        .then(() => {
-            displayMotd(motd, callback);
-        })
-    }
+console.log(motdTable.prototype);
+    return new Promise ((resolve, reject) => {
+        // Display current MotD
+        if (args.length == 0) {
+            motdTable.findOne({ where: { server_id: message.guild.id } })
+            .then(data => {
+                if (data) {
+                    motd = data.motd;  
+                }
+                displayMotd(motd)
+                .then((msg) => {
+                    resolve(msg);
+                })
+                .catch((e) => {
+                    reject(e);
+                });
+            });
+            // Update MotD
+        } else {
+            // Create a string from the args, that is, the motd
+            motd = args.join(' ');
+            motdTable.upsert({ server_id: message.guild.id, motd: motd })
+            .then(() => {
+                displayMotd(motd)
+                .then((msg) => {
+                    resolve(msg);
+                })
+                .catch((e) => {
+                    reject(e);
+                });
+            })
+        }
+    });
+    
 }
 
-function displayMotd(msg, callback) {
-    
-    if (msg != null && msg != '') {
-        embedMsg = {
-            author: {
-                name: i18n.__("plugin.serverMotD.motd"),
-                icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-            },
-            color: 3447003,
-            description: msg
-        };
-        callback(null, embedMsg, true);
-    } else {
-        callback(new Error(i18n.__("plugin.serverMotD.error.noMotDSet") /*"No MotD set."*/ ));
-    }
+function displayMotd(msg) {
+    return new Promise((resolve, reject) => {
+        if (msg != null && msg != '') {
+            embedMsg = {
+                author: {
+                    name: i18n.__("plugin.serverMotD.motd"),
+                    icon_url: "https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png"
+                },
+                color: 3447003,
+                description: msg
+            };
+            resolve(embedMsg);
+        } else {
+            reject(new Error(i18n.__("plugin.serverMotD.error.noMotDSet") /*"No MotD set."*/ ));
+        }
+    });
 }
 
 function motdChanged(lastLoginDate, motdChangeDate) {
-    var res = motdChangeDate > lastLoginDate;
+    let res = motdChangeDate > lastLoginDate;
     return res;
 }
 
@@ -110,22 +126,22 @@ function daysDifference(d1, d2) {
     return d2.getDate() - d1.getDate();
 }
 
-var motdArgs = [{
+let motdArgs = [{
     "tag": i18n.__("plugin.serverMotD.args.newMessage.tag"), //"nuevoMensaje",
     "desc": i18n.__("plugin.serverMotD.args.newMessage.desc"), //"Establece el mensaje diario al indicado.",
     "optional": true
 }];
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var serverMotDEvent = new EventHandler('presenceUpdate', onConnectWelcome);
+let serverMotDEvent = new EventHandler('presenceUpdate', onConnectWelcome);
 eventHandlers.push(serverMotDEvent);
-var serverMotDCmd = new Command('motd', i18n.__("plugin.serverMotD.desc") /*'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.'*/ , motd, 1, [], motdArgs);
+let serverMotDCmd = new Command('motd', 'Message of the Day', i18n.__("plugin.serverMotD.desc") /*'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.'*/ , motd, 1, [], motdArgs);
 commands.push(serverMotDCmd);
 
-var serverMotD = new Plugin('serverMotD', commands, eventHandlers);
+let serverMotDPlugin = new Plugin('serverMotD', commands, eventHandlers);
 
 
 // Exports section
-module.exports = serverMotD;
+module.exports = serverMotDPlugin;

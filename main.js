@@ -1,13 +1,13 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-var Bot = require("./classes/discord-bot.class.js");
-var functions = require("./functions.js");
+const Bot = require("./classes/discord-bot.class.js");
+const functions = require("./functions.js");
 const config = require("./config.json");
-var i18n = functions.i18n;
+const i18n = functions.i18n;
 
 const token = config.apiKeys.discordAPIKey;
 const cmdPrefix = config.botConfig.cmdPrefix;
-var botObj = new Bot(cmdPrefix);
+const botObj = new Bot(cmdPrefix);
 
 // The ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted
@@ -38,17 +38,17 @@ client.on('message', function(message) {
         // Do nothing
         return;
     }
-    var botUser = client.user.username;
-    var firstEle = message.content.split(/\s+/g)[0];
+    let botUser = client.user.username;
+    let firstEle = message.content.split(/\s+/g)[0];
 
-    var prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
-    var mentionPresent = message.mentions.users.find(user => user.username === botUser) !== null;
-    var isDM = message.channel.type == 'dm';
+    let prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
+    let mentionPresent = message.mentions.users.find(user => user.username === botUser) !== null;
+    let isDM = message.channel.type == 'dm';
 
     // Reply when using bot prefix or mentions, ignore direct messages, as it's impossible to determine the server
     if ((prefixPresent || mentionPresent) && !isDM) {
         // Cut the prefix or bot mention from the message
-        var tempA = message.content.split(/\s+/g);
+        let tempA = message.content.split(/\s+/g);
         tempA.splice(0, 1); // Prefix item
         message.content = tempA.join(" "); // Redo string
 
@@ -60,8 +60,8 @@ client.on('message', function(message) {
 client.login(token);
 
 function loadPlugins(bot, client) {
-    var plugins = [];
-    var commands = []; // Used by the help plugin
+    let plugins = [];
+    let commands = []; // Used by the help plugin
 
     // Random Member Quote
     plugins.push(require("./plugins/randomMemberQuote/randomMemberQuote.js"));
@@ -90,7 +90,7 @@ function loadPlugins(bot, client) {
     });
 
     // Help
-    var help = require("./plugins/help/help.js");
+    let help = require("./plugins/help/help.js");
     commands.push(help);
     // Add the command list as a parameter of the getHelp function
     commands.forEach(function(e) {

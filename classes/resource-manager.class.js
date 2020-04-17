@@ -10,9 +10,9 @@ module.exports =
         }
 
         getResourcePath(resourceName, category) {
-            var found = false;
-            var result = "";
-            var path = this.basePath
+            let found = false;
+            let result = "";
+            let path = this.basePath
             this.resourceList[category].forEach(function(e) {
                 if (e.name == resourceName && !found) {
                     result = path + e.file;
@@ -24,7 +24,7 @@ module.exports =
         }
 
         getResourceList(category) {
-            var list = [];
+            let list = [];
             this.resourceList[category].forEach(function(e) {
                 list.push(e.name);
             });

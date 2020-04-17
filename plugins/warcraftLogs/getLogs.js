@@ -1,12 +1,12 @@
 // Requires section
-var Plugin = require.main.require("./classes/plugin.class.js");
-var Command = require.main.require("./classes/command.class.js");
+const Plugin = require.main.require("./classes/plugin.class.js");
+const Command = require.main.require("./classes/command.class.js");
 const config = require.main.require("./config.json");
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
 // Main code section
-function getLogs(fParams, args, callback) {
+function getLogs(fParams, args) {
     // Warcraft Logs api
     const api = require('weasel.js');
 
@@ -14,52 +14,53 @@ function getLogs(fParams, args, callback) {
     api.setApiKey(config.apiKeys.wLogsAPIKey);
 
     // Optional parameters for the api call. 
-    var params = {};
-    // Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
-    api.getReportsGuild(config.guildInfo.guildName, config.guildInfo.guildRealm, config.guildInfo.guildRegion, params, function(err, data) {
-        if (err) {
-            //We caught an error, send it to the callback function. 
-            callback(err);
-            return;
-        }
-        // Success, log the whole data object to the console. 
-        var lastN = 5;
-        var logsObj = data.slice(-lastN);
-        var logInfo = [];
-        logsObj.forEach(function(e) {
-            var d = new Date(e.start);
-            var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            var date = d.toLocaleString('en-GB', options);
-            var info = [{
-                name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
-                value: i18n.__('plugin.warcraftLogs.logDate', date, e.owner) //"Log del **" + date + "** por **" + e.owner + "**"
-            }];
-            logInfo = logInfo.concat(info);
-        })
+    let params = {};
+    return new Promise ((resolve, reject) => {
+        // Call the function to list guild reports, can be filtered on start time and end time as a UNIX timestamp with the optional parameters @params. 
+        api.getReportsGuild(config.guildInfo.guildName, config.guildInfo.guildRealm, config.guildInfo.guildRegion, params, function(err, data) {
+            if (err) {
+                //We caught an error, send it to the callback function. 
+                reject(err);
+            }
+            // Success, log the whole data object to the console. 
+            let lastN = 5;
+            let logsObj = data.slice(-lastN);
+            let logInfo = [];
+            logsObj.forEach(function(e) {
+                let d = new Date(e.start);
+                let options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                let date = d.toLocaleString('en-GB', options);
+                let info = [{
+                    name: e.title + " - https://www.warcraftlogs.com/reports/" + e.id,
+                    value: i18n.__('plugin.warcraftLogs.logDate', date, e.owner) //"Log del **" + date + "** por **" + e.owner + "**"
+                }];
+                logInfo = logInfo.concat(info);
+            })
 
-        var embedMsg = {
-            author: {
-                name: "WarCraft Logs",
-                icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-            },
-            color: 3447003,
-            title: i18n.__('plugin.warcraftLogs.atWarcraftLogs', config.guildInfo.guildName),
-            url: "https://www.warcraftlogs.com/guilds/154273",
-            fields: logInfo,
-        };
-        callback(null, embedMsg, true);
+            let embedMsg = {
+                author: {
+                    name: "WarCraft Logs",
+                    icon_url: "https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png"
+                },
+                color: 3447003,
+                title: i18n.__('plugin.warcraftLogs.atWarcraftLogs', config.guildInfo.guildName),
+                url: "https://www.warcraftlogs.com/guilds/154273",
+                fields: logInfo,
+            };
+            resolve(embedMsg);
+        });
     });
 }
 
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var getLogsCmd = new Command('logs', i18n.__('plugin.warcraftLogs.desc'), getLogs);
+let getLogsCmd = new Command('logs', 'Warcraft Logs', i18n.__('plugin.warcraftLogs.desc'), getLogs);
 commands.push(getLogsCmd);
 
-var getLogs = new Plugin(commands, eventHandlers);
+let getLogsPlugin = new Plugin('getLogs', commands, eventHandlers);
 
 
 // Exports section
-module.exports = getLogs;
+module.exports = getLogsPlugin;

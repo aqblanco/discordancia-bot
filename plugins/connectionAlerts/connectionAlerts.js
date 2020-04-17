@@ -1,12 +1,12 @@
-var Plugin = require.main.require("./classes/plugin.class.js");
-var EventHandler = require.main.require("./classes/event-handler.class.js");
+const Plugin = require.main.require("./classes/plugin.class.js");
+const EventHandler = require.main.require("./classes/event-handler.class.js");
 
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
 function connectionAlert(oldMember, newMember) {
-    /*var currentStatus = newMember.guild.presences.get(newMember.user.id).status;
-    var oldStatus = oldMember.frozenPresence.status;
+    /*let currentStatus = newMember.guild.presences.get(newMember.user.id).status;
+    let oldStatus = oldMember.frozenPresence.status;
 
     // Came from offline status
     if (oldStatus === 'offline') {
@@ -19,14 +19,14 @@ function connectionAlert(oldMember, newMember) {
     }*/
 }
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var connectionAlertEvent = new EventHandler('presenceUpdate', connectionAlert);
+let connectionAlertEvent = new EventHandler('presenceUpdate', connectionAlert);
 eventHandlers.push(connectionAlertEvent);
 
-var connectionAlerts = new Plugin('connectionAlerts', commands, eventHandlers);
+let connectionAlertsPlugin = new Plugin('connectionAlerts', commands, eventHandlers);
 
 
 // Exports section
-module.exports = connectionAlerts;
+module.exports = connectionAlertsPlugin;

@@ -1,27 +1,37 @@
 // Requires section
-var Plugin = require.main.require("./classes/plugin.class.js");
-var Command = require.main.require("./classes/command.class.js");
-var strings = require("./strings.js");
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const Plugin = require.main.require("./classes/plugin.class.js");
+const Command = require.main.require("./classes/command.class.js");
+const strings = require("./strings.js");
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
 // Main code section
-function getRandomMemberQuote(fParams, args, callback) {
-    var getRandomStr = functions.getRandomStr;
-    var messages = strings.memberQuotes;
-    var msg = getRandomStr(messages);
-    callback(null, msg);
+function getRandomMemberQuote(fParams, args) {
+    const Discord = require("discord.js");
+    return new Promise ((resolve, reject) => {
+        let getRandomStr = functions.getRandomStr;
+        let messages = strings.memberQuotes;
+        let msg = getRandomStr(messages);
+
+        /*let embed = new Discord.MessageEmbed()
+        .setTitle('Random Quote')
+        .setColor(3447003)
+        .setDescription(msg);*/
+         
+        resolve(msg);
+    });
+    
 }
 
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var randomMemberQuoteCmd = new Command('frase', i18n.__('plugin.randomMemberQuote.desc'), getRandomMemberQuote);
+let randomMemberQuoteCmd = new Command('frase', 'Random Member Quote', i18n.__('plugin.randomMemberQuote.desc'), getRandomMemberQuote);
 commands.push(randomMemberQuoteCmd);
 
-var randomMemberQuote = new Plugin('randomMemberQuote', commands, eventHandlers);
+let randomMemberQuotePlugin = new Plugin('randomMemberQuote', commands, eventHandlers);
 
 
 // Exports section
-module.exports = randomMemberQuote;
+module.exports = randomMemberQuotePlugin;

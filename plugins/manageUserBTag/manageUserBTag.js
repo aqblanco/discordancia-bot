@@ -1,60 +1,64 @@
 // Requires section
-var Plugin = require.main.require("./classes/plugin.class.js");
-var Command = require.main.require("./classes/command.class.js");
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const Plugin = require.main.require("./classes/plugin.class.js");
+const Command = require.main.require("./classes/command.class.js");
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
 // Main code section
-function linkUserBTag(fParams, args, callback) {
-    var btagLib = require.main.require("./lib/btag.lib.js");
-    var userID = fParams.message.author.id;
-    var userName = fParams.message.author.username;
+function linkUserBTag(fParams, args) {
+    const btagLib = require.main.require("./lib/btag.lib.js");
+    let userID = fParams.message.author.id;
+    let userName = fParams.message.author.username;
 
-    var btag = args[0];
-    if (!btagLib.validateBTag(btag)) {
-        callback(new Error(i18n.__("plugin.manageUserBTag.link.error.notValid")));
-    } else {
-        btagLib.setBTag(btag, userID)
-        .then (() => {
-            callback(null, i18n.__("plugin.manageUserBTag.link.ok", userName));
-        })
-        .catch(() => {
-            callback(new Error(i18n.__("plugin.manageUserBTag.link.error.writeError", userName)));
-        });
-    }
-}
-
-function unlinkUserBTag(fParams, args, callback) {
-    var btagLib = require.main.require("./lib/btag.lib.js");
-    var userID = fParams.message.author.id;
-    var userName = fParams.message.author.username;
-    var btag = null;
-
-    btagLib.setBTag(btag, userID)
-    .then (() => {
-        callback(null, i18n.__("plugin.manageUserBTag.unlink.ok", userName));
-    })
-    .catch(() => {
-        callback(new Error(i18n.__("plugin.manageUserBTag.unlink.error", userName)));
+    let btag = args[0];
+    return new Promise((resolve, reject) => {
+        if (!btagLib.validateBTag(btag)) {
+            reject(new Error(i18n.__("plugin.manageUserBTag.link.error.notValid")));
+        } else {
+            btagLib.setBTag(btag, userID)
+            .then (() => {
+                resolve(i18n.__("plugin.manageUserBTag.link.ok", userName));
+            })
+            .catch(() => {
+                reject(new Error(i18n.__("plugin.manageUserBTag.link.error.writeError", userName)));
+            });
+        }
     });
 }
 
-var linkUserBTagArgs = [{
+function unlinkUserBTag(fParams, args) {
+    const btagLib = require.main.require("./lib/btag.lib.js");
+    let userID = fParams.message.author.id;
+    let userName = fParams.message.author.username;
+    let btag = null;
+
+    return new Promise((resolve, reject) => {
+        btagLib.setBTag(btag, userID)
+        .then (() => {
+            resolve(i18n.__("plugin.manageUserBTag.unlink.ok", userName));
+        })
+        .catch(() => {
+            reject(new Error(i18n.__("plugin.manageUserBTag.unlink.error", userName)));
+        });
+    });
+}
+
+let linkUserBTagArgs = [{
     "tag": i18n.__("plugin.manageUserBTag.link.args.btag.tag"),
     "desc": i18n.__("plugin.manageUserBTag.link.args.btag.desc"),
     "optional": false
 }];
 
-var commands = [];
-var eventHandlers = [];
+let commands = [];
+let eventHandlers = [];
 
-var linkUserBTagCmd = new Command('vincular', i18n.__('plugin.manageUserBTag.link.desc'), linkUserBTag, 0, [], linkUserBTagArgs);
+let linkUserBTagCmd = new Command('vincular', 'Link BattleTag', i18n.__('plugin.manageUserBTag.link.desc'), linkUserBTag, 0, [], linkUserBTagArgs);
 commands.push(linkUserBTagCmd);
-var unlinkUserBTagCmd = new Command('desvincular', i18n.__('plugin.manageUserBTag.unlink.desc'), unlinkUserBTag);
+let unlinkUserBTagCmd = new Command('desvincular', 'Unlink BattleTag', i18n.__('plugin.manageUserBTag.unlink.desc'), unlinkUserBTag);
 commands.push(unlinkUserBTagCmd);
 
-var manageUserBTag = new Plugin('manageUserBTag', commands, eventHandlers);
+let manageUserBTagPlugin = new Plugin('manageUserBTag', commands, eventHandlers);
 
 
 // Exports section
-module.exports = manageUserBTag;
+module.exports = manageUserBTagPlugin;

@@ -1,18 +1,17 @@
 // Requires section
-var Command = require.main.require("./classes/command.class.js");
-
-var functions = require.main.require("./functions.js");
-var i18n = functions.i18n;
+const Command = require.main.require("./classes/command.class.js");
+const functions = require.main.require("./functions.js");
+const i18n = functions.i18n;
 
 // Main code section
 function getHelp(fParams, args, callback) {
-    var prefix = fParams['cmdPrefix'];
-    var commandList = fParams['commands'];
-    var command = args.length == 0 ? "" : args[0];
-    var message = fParams.message;
+    let prefix = fParams['cmdPrefix'];
+    let commandList = fParams['commands'];
+    let command = args.length == 0 ? "" : args[0];
+    let message = fParams.message;
 
     // empty check for command, else take first element
-    var res = null;
+    let res = null;
 
     if (command == "") {
         res = getWholeHelp(commandList, message.member);
@@ -20,37 +19,39 @@ function getHelp(fParams, args, callback) {
         res = getCommandHelp(commandList, command);
     }
 
-    if (res.err != null) {
-        callback(res.err);
-        return;
-    }
+    return new Promise((resolve, reject) => {
+        if (res.err != null) {
+            reject(res.err);
+        }
 
-    var embed = res.embedMsg;
-    message.member.send({ embed });
+        let embed = res.embedMsg;
+        message.member.send({ embed });
 
-    var userNotification = {
-        author: {
-            name: i18n.__("plugin.help.help"),
-            icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
-        },
-        color: 3447003,
-        description: "**" + i18n.__("plugin.help.helpSentNotification", `<@${message.member.user.id}>`) + "**"
-    };
-    callback(null, userNotification, true);
+        let userNotification = {
+            author: {
+                name: i18n.__("plugin.help.help"),
+                icon_url: "https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png"
+            },
+            color: 3447003,
+            description: "**" + i18n.__("plugin.help.helpSentNotification", `<@${message.member.user.id}>`) + "**"
+        };
+        resolve(userNotification);
+    });
+    
 }
 
 function getWholeHelp(commandList, requester) {
     // Display the whole command list
 
-    var res = { "err": null, msg: "" }
-    var msg = "";
+    let res = { "err": null, msg: "" }
+    let msg = "";
 
     commandList.forEach(function(e) {
         if (e.userCanExecute(requester)) {
             // Build argument string for the command signature
-            var argString = "";
+            let argString = "";
             e.getArgumentList().forEach(function(arg) {
-                var tag = arg.tag;
+                let tag = arg.tag;
                 if (arg.optional) tag = "[" + tag + "]";
                 argString += " *`" + tag + "`* ";
             });
@@ -59,10 +60,10 @@ function getWholeHelp(commandList, requester) {
     })
 
     // Prepare embed output
-    var embedMsg = {
+    let embedMsg = {
         author: {
             name: i18n.__("plugin.help.help"),
-            icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+            icon_url: "https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png"
         },
         color: 3447003,
         description: msg
@@ -75,21 +76,21 @@ function getWholeHelp(commandList, requester) {
 function getCommandHelp(commandList, command, callback) {
     // Display desired command help
 
-    var res = { "err": null, msg: "" }
-    var embedMsg = {};
+    let res = { "err": null, msg: "" }
+    let embedMsg = {};
 
     // Search for the command in the list
-    var found = null;
+    let found = null;
 
     commandList.forEach(function(c) {
         if (c.getLabel() == command) found = c;
     });
     if (found != null) {
         // Command found
-        var argsStr = "";
-        var args = found.getArgumentList();
+        let argsStr = "";
+        let args = found.getArgumentList();
         args.forEach(function(a) {
-            var opt = "";
+            let opt = "";
             if (a.optional) opt = "(" + i18n.__("plugin.help.optional") + ") ";
             argsStr += "`" + a.tag + "` " + opt + "- " + a.desc + "\n";
         });
@@ -99,7 +100,7 @@ function getCommandHelp(commandList, command, callback) {
         embedMsg = {
             author: {
                 name: i18n.__("plugin.help.help"),
-                icon_url: "https://www.warcraftlogs.com/img/warcraft/header-logo.png"
+                icon_url: "https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png"
             },
             color: 3447003,
             title: i18n.__("plugin.help.command") + ": `" + found.getLabel() + "`",
@@ -127,13 +128,13 @@ function getCommandHelp(commandList, command, callback) {
     return res;
 }
 
-var helpArgs = [{
+let helpArgs = [{
     "tag": i18n.__("plugin.help.args.command.tag"),
     "desc": i18n.__("plugin.help.args.command.desc") /*"Nombre del comando del que ver la ayuda extendida."*/ ,
     "optional": true
 }];
 
-var help = new Command('ayuda', i18n.__("plugin.help.desc") /*'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.'*/ , getHelp, 0, [], helpArgs);
+let help = new Command('ayuda', 'Help', i18n.__("plugin.help.desc") /*'Muestra la lista de comandos disponibles. Si se especifica un comando, se muestra la ayuda extendida del mismo.'*/ , getHelp, 0, [], helpArgs);
 
 
 // Exports section

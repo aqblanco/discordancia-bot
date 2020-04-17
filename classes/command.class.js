@@ -6,6 +6,7 @@ module.exports =
          * Create a command object.
          * @constructor
          * @param {string} label - The string used to identify and call the command.
+         * @param {string} name - The command name to use in the UI.
          * @param {string} desc - What does the command do.
          * @param {function} f - Function to be executed when the command is called.
          * @param {boolean} [cmdLevel=0] - Is this command only avaliable to everyone (0), bot's manager group and admins (1) or admin users (2)
@@ -15,8 +16,9 @@ module.exports =
          * @param {string} argumentList.desc - What is that argument for.
          * @param {boolean} argumentList.optional - Is the argument optional.
          */
-        constructor(label, desc, f, cmdLevel = 0, fParams = [], argumentList = []) {
+        constructor(label, name, desc, f, cmdLevel = 0, fParams = [], argumentList = []) {
             this.label = label;
+            this.name = name;
             this.desc = desc;
             this.f = f;
             this.cmdLevel = cmdLevel;
@@ -27,6 +29,10 @@ module.exports =
 
         getLabel() {
             return this.label;
+        }
+
+        getName() {
+            return this.name;
         }
 
         getDesc() {
@@ -45,9 +51,9 @@ module.exports =
         }
 
         userCanExecute(user) {
-            var res = false;
-            var isAdmin = user.hasPermission("ADMINISTRATOR");
-            var isBotManager = false; //TODO: Check group
+            let res = false;
+            let isAdmin = user.hasPermission("ADMINISTRATOR");
+            let isBotManager = false; //TODO: Check group
 
             switch (this.cmdLevel) {
                 case 2:
@@ -65,18 +71,23 @@ module.exports =
         }
 
         addFParams(newParams) {
-            for (var key in newParams) {
-                //this.fParams.push({ key: newParams[key] });
+            for(let key in newParams) {
                 this.fParams[key] = newParams[key];
             }
-
-            //this.fParams.push(newParams);
         }
 
-        execute(args, callback) {
-            var f = this.f;
-            var fParams = this.fParams;
+        execute(args) {
+            let f = this.f;
+            let fParams = this.fParams;
 
-            var res = f(fParams, args, callback);
+            return new Promise((resolve, reject) => {
+                f(fParams, args)
+                .then((result) => {
+                    resolve(result);
+                })
+                .catch((e) => {
+                    reject(e);
+                });
+            });
         }
     }
