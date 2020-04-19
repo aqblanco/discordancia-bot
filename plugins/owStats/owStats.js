@@ -1,6 +1,6 @@
 const Plugin = require.main.require("./classes/plugin.class.js");
 const Command = require.main.require("./classes/command.class.js");
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const owjs = require('overwatch-js');
 const i18n = functions.i18n;
 
@@ -11,16 +11,16 @@ function owStats(fParams, args) {
     let request = null;
 
     // Determine which btag to query
-    const firstIsValidBTag = validateBTag(args[0]);
-    const secondIsValidBTag = validateBTag(args[1]);
+    const firstArgIsValidBTag = validateBTag(args[0]);
+    const secondArgIsValidBTag = validateBTag(args[1]);
 
     return new Promise ((resolve, reject) => {
-        if (firstIsValidBTag || secondIsValidBTag) {
+        if (firstArgIsValidBTag || secondArgIsValidBTag) {
             // Check if the first argument is a valid btag
-            if (firstIsValidBTag) {
+            if (firstArgIsValidBTag) {
                 btag = args[0];
                 // Check if the second argument is a valid btag
-            } else if (secondIsValidBTag) {
+            } else if (secondArgIsValidBTag) {
                 btag = args[1];
                 request = args[0];
             }
@@ -38,12 +38,13 @@ function owStats(fParams, args) {
             }
         } else {
             // No (valid) btag, try to get user's btag from persistance
+            const Users = require.main.require("./repositories/usersRepository.js");
+
             let userID = fParams.message.author.id;
-            readUserBTag(userID)
-            .then(user => {
+            Users.getBTag(userID)
+            .then(data => {
                 request = args[0];
-                // If btag is set, get data for it
-                btag = user.btag;
+                btag = data;
 
                 if (btag != null) { 
                     getPlayerStats(btag, request)
@@ -230,11 +231,6 @@ function getStatsEmbed(data) {
         .addField(i18n.__("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)*/
 
     return (embed);
-}
-
-function readUserBTag(userID) {
-    let btagLib = require.main.require("./lib/btag.lib.js");
-    return btagLib.getBTag(userID);
 }
 
 function compareValues(key, order = 'asc') {

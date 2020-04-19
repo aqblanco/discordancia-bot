@@ -2,7 +2,7 @@
 const Plugin = require.main.require("./classes/plugin.class.js");
 const Command = require.main.require("./classes/command.class.js");
 const config = require.main.require("./config.json");
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const i18n = functions.i18n;
 
 // Main code section

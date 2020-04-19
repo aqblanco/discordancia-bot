@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const Bot = require("./classes/discord-bot.class.js");
-const functions = require("./functions.js");
+const functions = require("./lib/functions.js");
 const config = require("./config.json");
 const i18n = functions.i18n;
 

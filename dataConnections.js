@@ -20,7 +20,7 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize('database', 'username', 'password', {
 	host: 'localhost',
 	dialect: 'sqlite',
-	logging: console.log,
+	logging: false,
 	storage: 'data.sqlite',
 });
 
@@ -32,4 +32,4 @@ const UsersServers = sequelize.import('models/UsersServers');
 module.exports.serverInfoTable = Servers;
 module.exports.motdInfoTable = Motd;
 module.exports.userInfoTable = Users;
-module.exports.userServerInfotable = UsersServers;
+module.exports.userServerInfoTable = UsersServers;

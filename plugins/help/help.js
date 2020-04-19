@@ -1,6 +1,6 @@
 // Requires section
 const Command = require.main.require("./classes/command.class.js");
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const i18n = functions.i18n;
 
 // Main code section

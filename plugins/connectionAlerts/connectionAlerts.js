@@ -1,7 +1,7 @@
 const Plugin = require.main.require("./classes/plugin.class.js");
 const EventHandler = require.main.require("./classes/event-handler.class.js");
 
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const i18n = functions.i18n;
 
 function connectionAlert(oldMember, newMember) {

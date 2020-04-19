@@ -3,7 +3,7 @@ const Plugin = require.main.require("./classes/plugin.class.js");
 const Command = require.main.require("./classes/command.class.js");
 const ResourceManager = require.main.require("./classes/resource-manager.class.js");
 const resources = require.main.require("./resources.js");
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const i18n = functions.i18n;
 
 const rm = new ResourceManager(require('path').dirname(require.main.filename) + '/assets/audio/', resources);

@@ -9,7 +9,7 @@ module.exports =
         }
 
         reply(message) {
-            const functions = require.main.require("./functions.js");
+            const functions = require.main.require("./lib/functions.js");
             const Discord = require("discord.js");
 
             const formatError = functions.formatError;

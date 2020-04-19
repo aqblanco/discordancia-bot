@@ -2,13 +2,11 @@ const Plugin = require.main.require("./classes/plugin.class.js");
 const Command = require.main.require("./classes/command.class.js");
 const EventHandler = require.main.require("./classes/event-handler.class.js");
 
-const functions = require.main.require("./functions.js");
+const functions = require.main.require("./lib/functions.js");
 const i18n = functions.i18n;
 
-const dataConnections = require.main.require("./dataConnections.js");
-// Tables
-const connectionsTable = dataConnections.userServerInfotable;
-const motdTable = dataConnections.motdInfoTable;
+const UsersServers = require.main.require("./repositories/usersServersRepository.js");
+const MotD = require.main.require("./repositories/motdRepository.js");
 
 
 function onConnectWelcome(oldMember, newMember) {
@@ -17,17 +15,15 @@ function onConnectWelcome(oldMember, newMember) {
     if (!oldMember || oldMember.status === 'offline') {
         let lastCon = null;
         // Get user last connection to server
-        connectionsTable.findOne({ where: { user_id: newMember.user.id, server_id: newMember.guild.id } })
+        UsersServers.getLastConnection(newMember.user.id, newMember.guild.id)
         .then(data => {
-            if (data) {
-                lastCon = data.last_connection;
-            }
+            lastCon = data;
             // Update last connection with current date
-            return connectionsTable.upsert({ user_id: newMember.user.id, server_id: newMember.guild.id, last_connection: new Date().getTime()})
+            return UsersServers.setLastConnection(newMember.user.id, newMember.guild.id, new Date().getTime())
         })
         .then(() => {
             // Get MotD
-            return motdTable.findOne({ where: { server_id:  newMember.guild.id } });
+            return MotD.getMotD(newMember.guild.id);
         })
         .then((data) => {
             if (data != null) {
@@ -62,11 +58,10 @@ function onConnectWelcome(oldMember, newMember) {
 function motd(fParams, args) {
     let message = fParams.message;
     let motd = '';
-console.log(motdTable.prototype);
     return new Promise ((resolve, reject) => {
         // Display current MotD
         if (args.length == 0) {
-            motdTable.findOne({ where: { server_id: message.guild.id } })
+            MotD.getMotD(message.guild.id)
             .then(data => {
                 if (data) {
                     motd = data.motd;  
@@ -83,7 +78,7 @@ console.log(motdTable.prototype);
         } else {
             // Create a string from the args, that is, the motd
             motd = args.join(' ');
-            motdTable.upsert({ server_id: message.guild.id, motd: motd })
+            MotD.setMotD(message.guild.id, motd)
             .then(() => {
                 displayMotd(motd)
                 .then((msg) => {
