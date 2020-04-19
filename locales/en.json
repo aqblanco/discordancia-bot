@@ -131,4 +131,5 @@
                 "error": "An error occured when trying to link BattleTag from %s."
             }
         }
-    }
+	}
+}
