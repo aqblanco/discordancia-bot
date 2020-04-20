@@ -47,7 +47,7 @@ function onConnectWelcome(oldMember, newMember) {
 						// PM with welcome message to non-bot users
 						if (!newMember.user.bot) {
 							newMember.user.send(`***${i18n.__('plugin.serverMotD.motd')}${`***: ${motdTxt}`}`)
-								.then(m => console.log(`MotD enviado al usuario ${newMember.user.username}`))
+								.then(() => console.log(`MotD enviado al usuario ${newMember.user.username}`))
 								.catch(console.error);
 						}
 					}
@@ -108,7 +108,7 @@ function displayMotd(msg) {
 			};
 			resolve(embedMsg);
 		} else {
-			reject(new Error(i18n.__('plugin.serverMotD.error.noMotDSet') /* "No MotD set."*/));
+			reject(new Error(i18n.__('plugin.serverMotD.error.noMotDSet')));
 		}
 	});
 }
@@ -134,7 +134,7 @@ const eventHandlers = [];
 
 const serverMotDEvent = new EventHandler('presenceUpdate', onConnectWelcome);
 eventHandlers.push(serverMotDEvent);
-const serverMotDCmd = new Command('motd', 'Message of the Day', i18n.__('plugin.serverMotD.desc') /* 'Muestra el mensaje diario. Si se le indica un mensaje, lo establece como el nuevo mensaje diario.'*/, motd, 1, [], motdArgs);
+const serverMotDCmd = new Command('motd', 'Message of the Day', i18n.__('plugin.serverMotD.desc'), motd, 1, [], motdArgs);
 commands.push(serverMotDCmd);
 
 const serverMotDPlugin = new Plugin('serverMotD', commands, eventHandlers);

@@ -1,20 +1,3 @@
-/*const Enmap = require('enmap');
-const EnmapLevel = require('enmap-level');
-
-// Tables
-const userInfoTable = new Enmap({
-    provider: new EnmapLevel ({
-        name: "userInfo",
-    }),
-});
-const serverInfoTable = new Enmap({
-    provider: new EnmapLevel ({
-        name: "serverInfo",
-    }),   
- });
-
-module.exports.serverInfoTable = serverInfoTable;
-module.exports.userInfoTable = userInfoTable;*/
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize('database', 'username', 'password', {
