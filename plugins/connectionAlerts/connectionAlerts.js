@@ -1,11 +1,11 @@
-const Plugin = require.main.require("./classes/plugin.class.js");
-const EventHandler = require.main.require("./classes/event-handler.class.js");
+const Plugin = require.main.require('./classes/plugin.class.js');
+const EventHandler = require.main.require('./classes/event-handler.class.js');
 
-const functions = require.main.require("./lib/functions.js");
+const functions = require.main.require('./lib/functions.js');
 const i18n = functions.i18n;
 
 function connectionAlert(oldMember, newMember) {
-    /*let currentStatus = newMember.guild.presences.get(newMember.user.id).status;
+	/* let currentStatus = newMember.guild.presences.get(newMember.user.id).status;
     let oldStatus = oldMember.frozenPresence.status;
 
     // Came from offline status
@@ -19,13 +19,13 @@ function connectionAlert(oldMember, newMember) {
     }*/
 }
 
-let commands = [];
-let eventHandlers = [];
+const commands = [];
+const eventHandlers = [];
 
-let connectionAlertEvent = new EventHandler('presenceUpdate', connectionAlert);
+const connectionAlertEvent = new EventHandler('presenceUpdate', connectionAlert);
 eventHandlers.push(connectionAlertEvent);
 
-let connectionAlertsPlugin = new Plugin('connectionAlerts', commands, eventHandlers);
+const connectionAlertsPlugin = new Plugin('connectionAlerts', commands, eventHandlers);
 
 
 // Exports section

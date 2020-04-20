@@ -1,8 +1,8 @@
-const Discord = require("discord.js");
+const Discord = require('discord.js');
 const client = new Discord.Client();
-const Bot = require("./classes/discord-bot.class.js");
-const functions = require("./lib/functions.js");
-const config = require("./config.json");
+const Bot = require('./classes/discord-bot.class.js');
+const functions = require('./lib/functions.js');
+const config = require('./config.json');
 const i18n = functions.i18n;
 
 const token = config.apiKeys.discordAPIKey;
@@ -12,14 +12,14 @@ const botObj = new Bot(cmdPrefix);
 // The ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted
 client.on('ready', function() {
-    client.user.setUsername(config.botConfig.username);
-    client.user.setActivity('Ayuda: ' + cmdPrefix + ' ayuda');
-    loadPlugins(botObj, client);
-    console.log(i18n.__('botStarted'));
+	client.user.setUsername(config.botConfig.username);
+	client.user.setActivity('Ayuda: ' + cmdPrefix + ' ayuda');
+	loadPlugins(botObj, client);
+	console.log(i18n.__('botStarted'));
 });
 
 // Create an event listener for new guild members
-/*client.on('guildMemberAdd', function(member) {
+/* client.on('guildMemberAdd', function(member) {
     // Send the message to the guilds default channel (usually #general), mentioning the member
     member.guild.defaultChannel.send(`Welcome to the server, ${member}!`);
 
@@ -34,72 +34,74 @@ client.on('ready', function() {
 
 // Create an event listener for messages
 client.on('message', function(message) {
-    if (message.author.bot) {
-        // Do nothing
-        return;
-    }
-    let botUser = client.user.username;
-    let firstEle = message.content.split(/\s+/g)[0];
+	if (message.author.bot) {
+		// Do nothing
+		return;
+	}
+	const botUser = client.user.username;
+	const firstEle = message.content.split(/\s+/g)[0];
 
-    let prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
-    let mentionPresent = message.mentions.users.find(user => user.username === botUser) !== null;
-    let isDM = message.channel.type == 'dm';
+	const prefixPresent = firstEle.toLowerCase() === cmdPrefix.toLowerCase();
+	const mentionPresent = message.mentions.users.find(user => user.username === botUser) !== null;
+	const isDM = message.channel.type == 'dm';
 
-    // Reply when using bot prefix or mentions, ignore direct messages, as it's impossible to determine the server
-    if ((prefixPresent || mentionPresent) && !isDM) {
-        // Cut the prefix or bot mention from the message
-        let tempA = message.content.split(/\s+/g);
-        tempA.splice(0, 1); // Prefix item
-        message.content = tempA.join(" "); // Redo string
-
-        botObj.reply(message);
-    }
+	// Reply when using bot prefix or mentions, ignore direct messages, as it's impossible to determine the server
+	if ((prefixPresent || mentionPresent) && !isDM) {
+		// Cut the prefix or bot mention from the message
+		const tempA = message.content.split(/\s+/g);
+		// Prefix item
+		tempA.splice(0, 1);
+		// Redo string
+		message.content = tempA.join(' ');
+		botObj.reply(message);
+	}
 });
 
 // Log our bot in
 client.login(token);
 
 function loadPlugins(bot, client) {
-    let plugins = [];
-    let commands = []; // Used by the help plugin
+	const plugins = [];
+	// Used by the help plugin
+	let commands = [];
 
-    // Random Member Quote
-    plugins.push(require("./plugins/randomMemberQuote/randomMemberQuote.js"));
-    // Play Audio
-    plugins.push(require("./plugins/playAudio/playAudio.js"));
-    // Get Logs
-    plugins.push(require("./plugins/warcraftLogs/getLogs.js"));
-    // Connection Alerts (Needs redo, alerts for voice channel connections)
-    plugins.push(require("./plugins/connectionAlerts/connectionAlerts.js"));
-    // Server MotD
-    plugins.push(require("./plugins/serverMotD/serverMotD.js"));
-    // Overwatch Stats
-    plugins.push(require("./plugins/owStats/owStats.js"));
-    // Manage User BTag
-    plugins.push(require("./plugins/manageUserBTag/manageUserBTag.js"));
+	// Random Member Quote
+	plugins.push(require('./plugins/randomMemberQuote/randomMemberQuote.js'));
+	// Play Audio
+	plugins.push(require('./plugins/playAudio/playAudio.js'));
+	// Get Logs
+	plugins.push(require('./plugins/warcraftLogs/getLogs.js'));
+	// Connection Alerts (Needs redo, alerts for voice channel connections)
+	plugins.push(require('./plugins/connectionAlerts/connectionAlerts.js'));
+	// Server MotD
+	plugins.push(require('./plugins/serverMotD/serverMotD.js'));
+	// Overwatch Stats
+	plugins.push(require('./plugins/owStats/owStats.js'));
+	// Manage User BTag
+	plugins.push(require('./plugins/manageUserBTag/manageUserBTag.js'));
 
-    plugins.forEach(function(p) {
-        if (functions.pluginIsEnabled(p.name)) {
-            commands = commands.concat(p.getCommands());
+	plugins.forEach(function(p) {
+		if (functions.pluginIsEnabled(p.name)) {
+			commands = commands.concat(p.getCommands());
 
-            bot.addCommands(p.getCommands());
-            p.getEventHandlers().forEach(function(handler) {
-                handler.bind(client);
-            });
-        }
-    });
+			bot.addCommands(p.getCommands());
+			p.getEventHandlers().forEach(function(handler) {
+				handler.bind(client);
+			});
+		}
+	});
 
-    // Help
-    let help = require("./plugins/help/help.js");
-    commands.push(help);
-    // Add the command list as a parameter of the getHelp function
-    commands.forEach(function(e) {
-        if (e.getLabel() == help.getLabel()) {
-            e.addFParams({ 'commands': commands });
-            e.addFParams({ 'cmdPrefix': cmdPrefix });
-            //Bot user
-        }
-    });
+	// Help
+	const help = require('./plugins/help/help.js');
+	commands.push(help);
+	// Add the command list as a parameter of the getHelp function
+	commands.forEach(function(e) {
+		if (e.getLabel() == help.getLabel()) {
+			e.addFParams({ 'commands': commands });
+			e.addFParams({ 'cmdPrefix': cmdPrefix });
+			// Bot user
+		}
+	});
 
-    bot.addCommand(help);
+	bot.addCommand(help);
 }

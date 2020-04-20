@@ -1,8 +1,8 @@
-var resources = {
-    audio: [{
-        'name': 'pelele',
-        'file': 'junkrat-pelele.ogg'
-    }]
+const resources = {
+	audio: [{
+		'name': 'pelele',
+		'file': 'junkrat-pelele.ogg',
+	}],
 };
 
 
