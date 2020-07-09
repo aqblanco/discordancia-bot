@@ -7,7 +7,7 @@
         },
         "playAudio": {
             "log": {
-                "playingFile": "Reproduciendo archivo: %s"
+                "playingAudio": "Reproduciendo audio: %s"
             },
             "desc": "Reproduce el audio indicado por tu canal de voz actual.",
             "error": {

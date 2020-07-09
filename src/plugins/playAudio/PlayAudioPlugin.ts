@@ -2,11 +2,11 @@ import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
 import { ResourceManager } from '@classes/ResourceManager.class';
-import { i18n } from '@helpers/functions';
+import { i18n, getPath } from '@helpers/functions';
 import { resources } from '../../resources';
 import * as Discord from 'discord.js';
 
-const rm = new ResourceManager(require('path').dirname(require.main.filename) + '/assets/audio/', new Map([['audio', resources.audio]]));
+const rm = new ResourceManager(`${getPath('assets')}audio/`, new Map([['audio', resources.audio]]));
 
 export class PlayAudioPlugin extends Plugin {
 	constructor() {
@@ -38,9 +38,9 @@ export class PlayAudioPlugin extends Plugin {
 							// file not empty check
 							const dispatcher = connection.play(file);
 							dispatcher.on('start', () => {
-								resolve(i18n.__('plugin.playAudio.log.playingFile', file));
+								resolve(i18n.__('plugin.playAudio.log.playingAudio', rName));
 							});
-							dispatcher.on('end', () => {
+							dispatcher.on('finish', () => {
 								connection.disconnect();
 								return;
 							});

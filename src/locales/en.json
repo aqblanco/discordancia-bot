@@ -7,7 +7,7 @@
         },
         "playAudio": {
             "log": {
-                "playingFile": "Playing file: %s"
+                "playingAudio": "Playing audio: %s"
             },
             "desc": "Play requested audio on your current voice channel.",
             "error": {

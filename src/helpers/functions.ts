@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { getConfigManager } from '@helpers/bootstrapper';
 
 export function getRandomStr (list: string[]): string {
@@ -9,13 +9,14 @@ export function getRandomStr (list: string[]): string {
 
 export function getPath (folder = 'appRoot'): string {
 	const basePath = dirname(require.main.filename) || process.mainModule.filename;
+	const rootPath = resolve(basePath, '..');
 	let path = '';
 	switch (folder) {
 	case 'classes':
 		path = `${basePath}/classes/`;
 		break;
-	case 'audio':
-		path = `${basePath}/assets/audio/`;
+	case 'assets':
+		path = `${rootPath}/assets/`;
 		break;
 	case 'plugins':
 		path = `${basePath}/plugins/`;
@@ -23,7 +24,10 @@ export function getPath (folder = 'appRoot'): string {
 	case 'config':
 		path = `${basePath}/config/`;
 		break;
-	case 'appRoot':
+	case 'rootPath':
+		path = rootPath;
+		break;
+	case 'appBase':
 	default:
 		path = basePath;
 	}
