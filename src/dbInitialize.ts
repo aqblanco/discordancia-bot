@@ -2,16 +2,15 @@
 
 import {createConnection, ConnectionOptions} from "typeorm";
 import { getPath } from "@helpers/functions";
-import * as fileData from './config/config.json'
 
-const config = fileData;
+const config = require(`${getPath('config')}config.json`);
 const url = config.development.database.uri || process.env.DATABASE_CONNECTION_URI;
 
-const rootPath = getPath();
+const basePath = getPath();
 const options: ConnectionOptions = {
 	type: 'sqlite',
 	database: url,
-	entities: [ `${rootPath}/persistence/models/*.js` ],
+	entities: [ `${basePath}/persistence/models/*.js` ],
 	synchronize: true,
 };
 

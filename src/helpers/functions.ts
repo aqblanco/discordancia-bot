@@ -22,9 +22,9 @@ export function getPath (folder = 'appRoot'): string {
 		path = `${basePath}/plugins/`;
 		break;
 	case 'config':
-		path = `${basePath}/config/`;
+		path = `${rootPath}/config/`;
 		break;
-	case 'rootPath':
+	case 'root':
 		path = rootPath;
 		break;
 	case 'appBase':
@@ -72,7 +72,7 @@ const i18nInstance = require('i18n');
 i18nInstance.configure({
 	locales: ['en', 'es'],
 	defaultLocale: 'en',
-	directory: module.exports.getPath() + '/locales',
+	directory: getPath('root') + '/locales',
 	objectNotation: true,
 });
 

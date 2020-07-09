@@ -12,8 +12,9 @@ let db: TypeORMDB;
 
 export function bootstrap() {
 	// Load configuration
-	const configFile = new ConfigFile('../config/config.json');
-	container.register("ConfigFile", { useValue: '../config/config.json' });
+	const baseConfigFile = `${getPath('config')}config.json`;
+	const configFile = new ConfigFile(baseConfigFile);
+	container.register("ConfigFile", { useValue: baseConfigFile });
 	container.register("ConfigType", { useValue: configFile });
 	container.register("Environment", { useValue: 'development' });
 	configManager = container.resolve<ConfigManager<ConfigFile, ConfigFileOptionsBase>>(ConfigManager);
@@ -23,11 +24,11 @@ export function bootstrap() {
 	const config = configManager.configuration;
 	const url = config.database.uri;
 
-	const rootPath = getPath();
+	const basePath = getPath();
 	const options: ConnectionOptions = {
 		type: 'sqlite',
 		database: url,
-		entities: [ `${rootPath}/persistence/entities/*.js` ],
+		entities: [ `${basePath}/persistence/entities/*.js` ],
 	};
 	
 	container.register("DBOptions", { useValue: options });
