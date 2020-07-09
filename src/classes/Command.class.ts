@@ -20,9 +20,6 @@ export class Command {
 	 * @param {CommandLevel} [cmdLevel=CommandLevel.Everyone] - Is this command only available to everyone (0), bot's manager group and admins (1) or admin users (2)
 	 * @param {Record<string, any>} [fParams=[]] - Parameters used by the function f (Optional).
 	 * @param {CommandArgument[]} argumentList - Arguments that the command may accept (Optional).
-	 * @param {string} argumentList.tag - String used to identify the command.
-	 * @param {string} argumentList.desc - What is that argument for.
-	 * @param {boolean} argumentList.optional - Is the argument optional.
 	 */
 	constructor(label: string, name: string, desc: string, f: Function, cmdLevel = CommandLevel.Everyone, fParams: any[] = [], argumentList: CommandArgument[] = []) {
 		this._label = label;

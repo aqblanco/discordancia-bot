@@ -19,7 +19,11 @@ gulp.task('default', function(done) {
 		.pipe(gulp.dest(tsProject.config.compilerOptions.outDir))
 		.on('end', done);
 
-	console.log(`[Extra]: Copying locales into ./${tsProject.config.compilerOptions.outDir}/locales`)
+	console.log(`[Config]: Copying config into ./${tsProject.config.compilerOptions.outDir}/config`)
+	gulp.src('./src/config/*.json')
+		.pipe(gulp.dest(`./${tsProject.config.compilerOptions.outDir}/config`));
+
+	console.log(`[Locales]: Copying locales into ./${tsProject.config.compilerOptions.outDir}/locales`)
 	gulp.src('./src/locales/**/*.json')
 		.pipe(gulp.dest(`./${tsProject.config.compilerOptions.outDir}/locales`));
 });

@@ -62,8 +62,8 @@ typings/
 # Visual Studio Code folder
 .vscode
 
-# Local configuration file
-config.json
+# Local configuration folder
+config
 
 # Persistance files
 *.sqlite

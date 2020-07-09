@@ -142,6 +142,10 @@ export class DiscordBot {
 		eventHandlers.forEach((h) => {
 			this.addEventHandler(h);
 		});
+		// Load config
+		if (p.configManager) {
+			p.configManager.readConfig();
+		}
 
 		return p;
 	}
@@ -175,7 +179,6 @@ export class DiscordBot {
 		const botCommands = this.getCommandList();
 
 		botCommands.forEach((c) => {
-			console.log(c.label);
 			if (res === null && c.label === cmd) {
 				res = c;
 			}

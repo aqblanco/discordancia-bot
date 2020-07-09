@@ -4,8 +4,7 @@ import { Command } from '@classes/Command.class';
 import { i18n, validateBTag } from '@helpers/functions';
 import { UserRepository } from '@persistence/repositories/userRepository';
 import * as Discord from 'discord.js';
-import { TypeORMDB } from '@persistence/classes/TypeORM.class';
-import { getDB } from '@helpers/initialize';
+import { getDB } from '@helpers/bootstrapper';
 
 const owjs = require('overwatch-js');
 

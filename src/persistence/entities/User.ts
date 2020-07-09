@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { getDB } from "@helpers/initialize";
+import { getDB } from "@helpers/bootstrapper";
 
 @Entity('user')
 export class UserEntity {

@@ -1,4 +1,5 @@
 import { Plugin } from '@classes/Plugin.class';
+import { PathLike } from 'fs';
 
 declare global {
 	interface CommandArgument {
@@ -34,6 +35,39 @@ declare global {
 
 	interface ResourceAudio extends ResourceGeneral {}
 	interface ResourceImage extends ResourceGeneral {}
+	
+	type ConfigCategoryLabel = "apiKeys"|"botConfig"|"database"/*|"pluginOptions"*/;
+
+
+	interface ConfigOptionsStructure {}
+
+	interface ConfigFileOptionsBase extends ConfigOptionsStructure {
+		apiKeys: APIKeysConfigOptions,
+		botConfig: BotConfigOptions,
+		database: DatabaseConfigOptions,
+	}
+
+	interface APIKeysConfigOptions {
+		discordAPIKey: string,
+		wLogsAPIKey: string,
+	}
+
+	interface BotConfigOptions {
+		prefix: string,
+		botUserName: string,
+		botActivity: string,
+		enabledPlugins: string[],
+	}
+
+	interface DatabaseConfigOptions {
+		uri: string
+	}
+
+	// Data structure to keep the options needed to setup a plugin configuration's
+	interface PluginConfigOptions {
+		name: PathLike,
+		structure: ConfigOptionsStructure,
+	}
 
 	interface BotConfig {
 		prefix: string,

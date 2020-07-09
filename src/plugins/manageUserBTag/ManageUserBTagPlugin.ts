@@ -3,7 +3,7 @@ import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
 import { UserRepository } from '@persistence/repositories/userRepository';
 import { i18n, validateBTag } from '@helpers/functions';
-import { getDB } from '@helpers/initialize';
+import { getDB } from '@helpers/bootstrapper';
 
 export class ManageUserBTagPlugin extends Plugin {
 	constructor() {

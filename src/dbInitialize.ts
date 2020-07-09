@@ -1,11 +1,10 @@
 // CREATE THE DB TABLES
 
 import {createConnection, ConnectionOptions} from "typeorm";
-import { Config } from "@helpers/config";
 import { getPath } from "@helpers/functions";
+import * as fileData from './config/config.json'
 
-const configObj = new Config();
-const config = configObj.getConfig();
+const config = fileData;
 const url = config.development.database.uri || process.env.DATABASE_CONNECTION_URI;
 
 const rootPath = getPath();

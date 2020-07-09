@@ -22,6 +22,7 @@
         "overwatch-js": "^1.8.0",
         "reflect-metadata": "^0.1.13",
         "sqlite3": "^4.1.1",
+        "tsyringe": "^4.3.0",
         "typeorm": "^0.2.24",
         "weasel.js": "^1.0.0"
     },
@@ -33,8 +34,8 @@
     "scripts": {
         "build": "tsc && gulp",
         "buildw": "tsc --watch",
-		"start": "node dist/main.js",
-		"initdb": "node dist/dbInitialize.js"
+        "start": "node dist/main.js",
+        "initdb": "node dist/dbInitialize.js"
     },
     "keywords": [],
     "author": "Aquilino Blanco",

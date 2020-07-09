@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
-import { Config } from '@helpers/config';
 import { dirname } from 'path';
+import { getConfigManager } from '@helpers/bootstrapper';
 
 export function getRandomStr (list: string[]): string {
 	const item = list[Math.floor(Math.random() * list.length)];
@@ -19,6 +19,9 @@ export function getPath (folder = 'appRoot'): string {
 		break;
 	case 'plugins':
 		path = `${basePath}/plugins/`;
+		break;
+	case 'config':
+		path = `${basePath}/config/`;
 		break;
 	case 'appRoot':
 	default:
@@ -40,10 +43,10 @@ export function formatError (msg: string): Discord.MessageEmbed {
 // TODO: Rework this. Move into Plugin class, check before registering into bot
 export function pluginIsEnabled(name: string): boolean {
 	//const rootPath = module.exports.getPath();
-	const configObj = new Config();
-	const config = configObj.getConfig();
+	const configManager = getConfigManager();
+	const config = configManager.configuration;
 
-	return config.development.botConfig.enabledPlugins.includes(name);
+	return config.botConfig.enabledPlugins.includes(name);
 };
 
 export function validateBTag(btag: string): boolean {

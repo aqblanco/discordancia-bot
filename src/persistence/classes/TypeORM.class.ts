@@ -1,40 +1,28 @@
 import { Connection, ConnectionOptions, ObjectType, ConnectionManager,EntityManager } from "typeorm";
+import { singleton, inject } from "tsyringe";
 
 // TODO: Create interface to be implemented by this
+@singleton()
 export class TypeORMDB {
-	private static connection: Connection;
-	private static entityManager: EntityManager;
-	private static dbObject: TypeORMDB;
+	private connection: Connection;
+	private entityManager: EntityManager;
 
-	private constructor(options: ConnectionOptions) {
+
+	constructor(@inject("DBOptions") options: ConnectionOptions) {
 		const connectionManager = new ConnectionManager();
-		TypeORMDB.connection = connectionManager.create(options);
+		this.connection = connectionManager.create(options);
 	}
-
-	static async getDBManager(options?: ConnectionOptions): Promise<TypeORMDB> {
-		if (!TypeORMDB.dbObject) {
-			TypeORMDB.dbObject = new TypeORMDB(options);
-			TypeORMDB.entityManager = await TypeORMDB.connection.createEntityManager();
-		}
-		return(TypeORMDB.dbObject);
-	}
-
-	// Use in a possible interface, no usage for TYPEORM (no way to add entity schemas dynamically?)
-	/*async addEntity<Entity>(entity: ObjectType<Entity>) {
-		const isConnected = TypeORMDB.connection.isConnected;
-		if (!isConnected) {
-			// Connect first
-			await TypeORMDB.connection.connect();
-		}
-	}*/
 
 	async getRepository<Repository>(repository: ObjectType<Repository>): Promise<Repository> {
-		const isConnected = TypeORMDB.connection.isConnected;
+		const isConnected = this.connection.isConnected;
 
 		if (!isConnected) {
 			// Connect first
-			await TypeORMDB.connection.connect();
+			await this.connection.connect();
 		}
-		return TypeORMDB.entityManager.getCustomRepository(repository);
+		if (!this.entityManager) {
+			this.entityManager = await this.connection.createEntityManager();
+		}
+		return this.entityManager.getCustomRepository(repository);
 	}
 }

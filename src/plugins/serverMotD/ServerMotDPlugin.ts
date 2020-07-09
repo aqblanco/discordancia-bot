@@ -4,7 +4,7 @@ import { Command } from '@classes/Command.class';
 import { i18n } from '@helpers/functions';
 import * as Discord from 'discord.js';
 import { ServerRepository } from '@persistence/repositories/serverRepository';
-import { getDB } from '@helpers/initialize';
+import { getDB } from '@helpers/bootstrapper';
 import { ServerEntity } from '@persistence/entities/Server';
 import { UserServerRepository } from '@persistence/repositories/userServerRepository';
 
