@@ -1,12 +1,17 @@
 import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
-import { i18n } from '@helpers/functions';
+import { i18n, getPath } from '@helpers/functions';
 import * as Discord from 'discord.js';
 
 export class WoWLogsPlugin extends Plugin {
-	constructor() {		
-		super('World Of Warcraft Logs', [], [], {name: 'wowlogs.json', structure: WoWLogsPlugin.getConfigStructure()});
+	constructor() {
+		super('World Of Warcraft Logs', {
+			configOptions: {
+				name: 'wowlogs.json', 
+				structure: WoWLogsPlugin.getConfigStructure(),
+			}
+		});
 
 		const getLogsCmd = new Command('logs', 'Warcraft Logs', i18n.__('plugin.warcraftLogs.desc'), this.getLogs);
 		super.addCommand(getLogsCmd);	

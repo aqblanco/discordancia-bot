@@ -7,7 +7,7 @@ import { getDB } from '@helpers/bootstrapper';
 
 export class ManageUserBTagPlugin extends Plugin {
 	constructor() {
-		super('Manage user Battle Tag', [], []);
+		super('Manage user Battle Tag', {});
 
 		const linkUserBTagArgs: CommandArgument[] = [{
 			'tag': i18n.__('plugin.manageUserBTag.link.args.btag.tag'),

@@ -9,7 +9,7 @@ export class HelpPlugin extends Plugin {
 	commandList: Command[] = [];
 
 	constructor() {
-		super('Help', [], []);
+		super('Help', {});
 
 		const helpArgs: CommandArgument[] = [{
 			'tag': i18n.__('plugin.help.args.command.tag'),

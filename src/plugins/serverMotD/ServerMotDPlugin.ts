@@ -10,7 +10,7 @@ import { UserServerRepository } from '@persistence/repositories/userServerReposi
 
 export class ServerMotDPlugin extends Plugin {
 	constructor() {
-		super('Server Message of the Day', [], []);
+		super('Server Message of the Day', {});
 
 		const motdArgs: CommandArgument[] = [{
 			'tag': i18n.__('plugin.serverMotD.args.newMessage.tag'),

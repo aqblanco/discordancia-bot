@@ -10,7 +10,7 @@ const rm = new ResourceManager(`${getPath('assets')}audio/`, new Map([['audio', 
 
 export class PlayAudioPlugin extends Plugin {
 	constructor() {
-		super('Play Audio', [], []);
+		super('Play Audio', {});
 
 		const playAudioArgs: CommandArgument[] = [{
 			'tag': i18n.__('plugin.playAudio.args.audio.tag'),

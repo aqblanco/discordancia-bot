@@ -5,6 +5,7 @@ import { ConfigFile } from '@classes/ConfigFile.class';
 import { ConfigManager } from '@classes/ConfigManager.class';
 import { ConfigType } from '@classes/ConfigType.class';
 import { container } from 'tsyringe';
+import { config } from 'process';
 
 export class Plugin {
 	private _name: string;
@@ -15,23 +16,25 @@ export class Plugin {
 	private _status: PluginStatus;
 	private _canBeDisabled: boolean;
 
-	constructor(name: string, commands: Command[] = [], eventHandlers: EventHandler<any>[] = [], configOptions: PluginConfigOptions = null, canBeDisabled = true) {
+	constructor(name: string, options: PluginOptions) {
+		options.configOptions = options.configOptions || null;
 		this._name = name;
-		this._commands = commands;
-		this._eventHandlers = eventHandlers;
-		if (configOptions != null) {
-			this._configOptions = configOptions;
+		this._commands = options.commands || [];
+		this._eventHandlers = options.eventHandlers || [];
+
+		if (options.configOptions != null) {
+			this._configOptions = options.configOptions;
 			let cfgPath = null;
-			if (this._configOptions.name != null && this._configOptions.name != '') {
+			if (this._configOptions.name && this._configOptions.name != '') {
 				cfgPath = `${getPath('config')}${this._configOptions.name}`;
 			}
 
-			if (cfgPath != null && configOptions.structure != {}) {
+			if (cfgPath != null) {
 				const configFile = new ConfigFile(cfgPath);
 				container.register("ConfigFile", { useValue: cfgPath });
 				container.register("ConfigType", { useValue: configFile });
 				container.register("Environment", { useValue: 'development' });
-				this._config = container.resolve<ConfigManager<ConfigFile, typeof configOptions.structure>>(ConfigManager);
+				this._config = container.resolve<ConfigManager<ConfigFile, typeof options.configOptions.structure>>(ConfigManager);
 			} else {
 				this._configOptions.name = '';
 				this._configOptions.structure = {};
@@ -44,7 +47,7 @@ export class Plugin {
 		}
 		
 		this._status = PluginStatus.Enabled;
-		this._canBeDisabled = canBeDisabled;
+		this._canBeDisabled = options.canBeDisabled || true;
 	}
 
 	addCommand(command: Command) {
@@ -68,11 +71,9 @@ export class Plugin {
 	}
 
 	get configuration(): ConfigOptionsStructure {
-		if (this._config) {
-			return this._config.configuration;
-		} else {
-			return {};
+		if (!this._config.configuration) {
+			this._config.readConfig();
 		}
-		
+		return this._config.configuration;
 	}
 }

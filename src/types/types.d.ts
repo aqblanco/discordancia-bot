@@ -1,4 +1,6 @@
 import { Plugin } from '@classes/Plugin.class';
+import { Command } from '@classes/Command.class';
+import { EventHandler } from '@classes/EventHandler.class';
 import { PathLike } from 'fs';
 
 declare global {
@@ -61,6 +63,13 @@ declare global {
 
 	interface DatabaseConfigOptions {
 		uri: string
+	}
+
+	interface PluginOptions {
+		commands?: Command[],
+		eventHandlers?: EventHandler<any>[],
+		configOptions?: PluginConfigOptions,
+		canBeDisabled?: boolean,
 	}
 
 	// Data structure to keep the options needed to setup a plugin configuration's

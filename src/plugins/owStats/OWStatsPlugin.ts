@@ -10,7 +10,7 @@ const owjs = require('overwatch-js');
 
 export class OWStatsPlugin extends Plugin {
 	constructor() {
-		super('Overwatch stats', [], []);
+		super('Overwatch stats', {});
 
 		const owStatsArgs: CommandArgument[] = [
 			{
