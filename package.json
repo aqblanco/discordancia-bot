@@ -27,10 +27,10 @@
         "weasel.js": "^1.0.0"
     },
     "devDependencies": {
-        "bufferutil": "^4.0.1",
+        "bufferutil": "^4.0.2",
         "gulp": "^4.0.2",
         "gulp-json-to-tsd": "^0.9.6",
-        "typescript": "^3.8.3"
+        "typescript": "^3.9.7"
     },
     "scripts": {
         "build": "tsc && gulp",
