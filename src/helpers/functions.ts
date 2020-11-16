@@ -67,7 +67,7 @@ export function validateBTag(btag: string): boolean {
 }
 
 // Initialize internacionalization support
-const i18nInstance = require('i18n');
+/*import i18nInstance from 'i18n';
 
 i18nInstance.configure({
 	locales: ['en', 'es'],
@@ -76,4 +76,13 @@ i18nInstance.configure({
 	objectNotation: true,
 });
 
-export const i18n = i18nInstance;
+export const i18n = i18nInstance;*/
+
+export function find<T>(
+    array: ReadonlyArray<T> | Array<T>,
+    predicate: (item: T, index?: number, obj?: ReadonlyArray<T> | Array<T>) => boolean,
+): T | undefined {
+    if (typeof Array.prototype.find === 'function') {
+        return (array as Array<T>).find(predicate);
+    }
+}

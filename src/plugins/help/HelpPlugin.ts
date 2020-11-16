@@ -2,7 +2,7 @@
 import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from "@classes/Command.class";
-import { i18n } from '@helpers/functions';
+import { getI18N } from '@helpers/bootstrapper';
 import * as Discord from 'discord.js';
 
 export class HelpPlugin extends Plugin {
@@ -11,26 +11,28 @@ export class HelpPlugin extends Plugin {
 	constructor() {
 		super('Help', {});
 
+		const i18n = getI18N();
 		const helpArgs: CommandArgument[] = [{
-			'tag': i18n.__('plugin.help.args.command.tag'),
-			'desc': i18n.__('plugin.help.args.command.desc'),
+			'tag': i18n.translate('plugin.help.args.command.tag'),
+			'desc': i18n.translate('plugin.help.args.command.desc'),
 			'optional': true,
 		}];
 
-		const helpCmd = new Command('ayuda', 'Help', i18n.__('plugin.help.desc'), this.getHelp, CommandLevel.Everyone, [], helpArgs);
+		const helpCmd = new Command('ayuda', 'Help', i18n.translate('plugin.help.desc'), this.getHelp, CommandLevel.Everyone, [], helpArgs);
 		super.addCommand(helpCmd);
 		this.addCommandHelp(helpCmd);
 	}
 
 	// Needs to be declared as an attribute because of it making calls to other internal methods
 	private getHelp = (fParams: Record<string, any>, args: string[]): Promise<Discord.MessageEmbed> => {
+		const i18n = getI18N();
 		const command = args.length == 0 ? '' : args[0];
 		const message = fParams.message;
 
 		const userNotification = new Discord.MessageEmbed()
-			.setAuthor(i18n.__('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
+			.setAuthor(i18n.translate('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
 			.setColor(3447003)
-			.setDescription(`**${i18n.__('plugin.help.helpSentNotification', `<@${message.member.user.id}>`)}**`);
+			.setDescription(`**${i18n.translate('plugin.help.helpSentNotification', `<@${message.member.user.id}>`)}**`);
 
 		// empty check for command, else take first element
 		return new Promise((resolve, reject) => {
@@ -67,6 +69,7 @@ export class HelpPlugin extends Plugin {
 	private getWholeHelp = (requester: Discord.GuildMember): Promise<Discord.MessageEmbed> => {
 		// Display the whole command list
 
+		const i18n = getI18N();
 		let msg = '';
 		return new Promise((resolve, reject) => {
 			this.commandList.forEach(e => {
@@ -84,7 +87,7 @@ export class HelpPlugin extends Plugin {
 
 			// Prepare embed output
 			const embedMsg = new Discord.MessageEmbed()
-				.setAuthor(i18n.__('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
+				.setAuthor(i18n.translate('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
 				.setColor(3447003)
 				.setDescription(msg);
 
@@ -99,6 +102,7 @@ export class HelpPlugin extends Plugin {
 			// Search for the command in the list
 			let found: Command;
 
+			const i18n = getI18N();
 			// TODO: Add a method in command class to find a command in the list
 			this.commandList.forEach(function (c) {
 				if (c.label == command) found = c;
@@ -109,23 +113,23 @@ export class HelpPlugin extends Plugin {
 				const args = found.argumentList;
 				args.forEach(function (a: CommandArgument) {
 					let opt = '';
-					if (a.optional) opt = '(' + i18n.__('plugin.help.optional') + ') ';
+					if (a.optional) opt = '(' + i18n.translate('plugin.help.optional') + ') ';
 					argsStr += '`' + a.tag + '` ' + opt + '- ' + a.desc + '\n';
 				});
-				if (argsStr === '') argsStr = i18n.__('plugin.help.noAvailableArgs');
+				if (argsStr === '') argsStr = i18n.translate('plugin.help.noAvailableArgs');
 
 				// Prepare embed output
 				const embedMsg = new Discord.MessageEmbed()
-					.setAuthor(i18n.__('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
+					.setAuthor(i18n.translate('plugin.help.help', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
 					.setColor(3447003)
-					.setTitle(i18n.__('plugin.help.command') + ': `' + found.label + '`')
-					.addField(i18n.__('plugin.help.description'), found.description)
-					.addField(i18n.__('plugin.help.arguments'), argsStr);
+					.setTitle(i18n.translate('plugin.help.command') + ': `' + found.label + '`')
+					.addField(i18n.translate('plugin.help.description'), found.description)
+					.addField(i18n.translate('plugin.help.arguments'), argsStr);
 
 				resolve(embedMsg);
 			} else {
 				// Command not found
-				reject(new Error(i18n.__('plugin.help.error.commandNotFound', command)));
+				reject(new Error(i18n.translate('plugin.help.error.commandNotFound', command)));
 			}
 		});
 	}

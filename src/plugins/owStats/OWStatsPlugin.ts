@@ -1,10 +1,10 @@
 import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
-import { i18n, validateBTag } from '@helpers/functions';
+import { validateBTag } from '@helpers/functions';
 import { UserRepository } from '@persistence/repositories/userRepository';
 import * as Discord from 'discord.js';
-import { getDB } from '@helpers/bootstrapper';
+import { getDB, getI18N } from '@helpers/bootstrapper';
 
 const owjs = require('overwatch-js');
 
@@ -12,22 +12,23 @@ export class OWStatsPlugin extends Plugin {
 	constructor() {
 		super('Overwatch stats', {});
 
+		const i18n = getI18N();
 		const owStatsArgs: CommandArgument[] = [
 			{
-				'tag': i18n.__('plugin.owStats.args.gameMode.tag'),
-				'desc': i18n.__('plugin.owStats.args.gameMode.desc') + '\n\n\t**' + i18n.__('argsPossibleValues') + '**\n\t\t' +
-						'`pr`: ' + i18n.__('plugin.owStats.gameMode.quickMatch') + '\n\t\t' +
-						'`comp`: ' + i18n.__('plugin.owStats.gameMode.competitive'),
+				'tag': i18n.translate('plugin.owStats.args.gameMode.tag'),
+				'desc': i18n.translate('plugin.owStats.args.gameMode.desc') + '\n\n\t**' + i18n.translate('argsPossibleValues') + '**\n\t\t' +
+						'`pr`: ' + i18n.translate('plugin.owStats.gameMode.quickMatch') + '\n\t\t' +
+						'`comp`: ' + i18n.translate('plugin.owStats.gameMode.competitive'),
 				'optional': true,
 			},
 			{
-				'tag': i18n.__('plugin.owStats.args.btag.tag'),
-				'desc': i18n.__('plugin.owStats.args.btag.desc'),
+				'tag': i18n.translate('plugin.owStats.args.btag.tag'),
+				'desc': i18n.translate('plugin.owStats.args.btag.desc'),
 				'optional': true,
 			},
 		];
 
-		const owStatsCmd = new Command('owstats', 'Overwatch Stats', i18n.__('plugin.owStats.desc'), this.owStats, CommandLevel.Everyone, [], owStatsArgs);
+		const owStatsCmd = new Command('owstats', 'Overwatch Stats', i18n.translate('plugin.owStats.desc'), this.owStats, CommandLevel.Everyone, [], owStatsArgs);
 		super.addCommand(owStatsCmd);	
 	}
 
@@ -36,6 +37,7 @@ export class OWStatsPlugin extends Plugin {
 		let btag: string;
 		let request: string;
 
+		const i18n = getI18N();
 		// Determine which btag to query
 		const firstArgIsValidBTag = validateBTag(args[0]);
 		const secondArgIsValidBTag = validateBTag(args[1]);
@@ -60,7 +62,7 @@ export class OWStatsPlugin extends Plugin {
 							reject(e);
 						});
 				} else {
-					reject(new Error(i18n.__('plugin.owStats.error.noBTagSet', fParams.message.author.username)));
+					reject(new Error(i18n.translate('plugin.owStats.error.noBTagSet', fParams.message.author.username)));
 				}
 			} else {
 				// No (valid) btag, try to get user's btag from persistance
@@ -82,7 +84,7 @@ export class OWStatsPlugin extends Plugin {
 								reject(e);
 							});
 					} else {
-						reject(new Error(i18n.__('plugin.owStats.error.noBTagSet', fParams.message.author.username)));
+						reject(new Error(i18n.translate('plugin.owStats.error.noBTagSet', fParams.message.author.username)));
 					}
 				});
 			}
@@ -143,6 +145,7 @@ export class OWStatsPlugin extends Plugin {
 		const heroes = pData.quickplay.heroes;
 		// console.log(getMostPlayedHeroes(5, heroes));
 		const mostPHeroes = this.getMostPlayedHeroes(5, heroes);
+		const i18n = getI18N();
 
 		const accStats = {
 			level: `${pData.profile.tier}${pData.profile.level}`,
@@ -167,7 +170,7 @@ export class OWStatsPlugin extends Plugin {
 
 		const data = {
 			account: pData.profile.btag,
-			gameMode: i18n.__('plugin.owStats.gameMode.quickMatch'),
+			gameMode: i18n.translate('plugin.owStats.gameMode.quickMatch'),
 			avatar: pData.profile.avatar,
 			accountStats: accStats,
 			medals: medals,
@@ -183,6 +186,7 @@ export class OWStatsPlugin extends Plugin {
 		const heroes = pData.quickplay.heroes;
 		// console.log(getMostPlayedHeroes(5, heroes));
 		const mostPHeroes = this.getMostPlayedHeroes(5, heroes);
+		const i18n = getI18N();
 
 		const accStats = {
 			level: `${pData.profile.tier}${pData.profile.level}`,
@@ -206,7 +210,7 @@ export class OWStatsPlugin extends Plugin {
 		console.log(pData.profile);
 		const data = {
 			account: pData.profile.btag,
-			gameMode: i18n.__('plugin.owStats.gameMode.competitive'),
+			gameMode: i18n.translate('plugin.owStats.gameMode.competitive'),
 			avatar: pData.profile.avatar,
 			accountStats: accStats,
 			medals: medals,
@@ -220,25 +224,26 @@ export class OWStatsPlugin extends Plugin {
 	// Needs to be declared as an attribute because of it making calls to other internal methods
 	private getStatsEmbed = (data: any): Promise<Discord.MessageEmbed> => {
 		const Discord = require('discord.js');
+		const i18n = getI18N();
 
 		const accStatsStr = [
-			`*${i18n.__('plugin.owStats.accStats.level')}:* ${data.accountStats.level}`,
-			`*${i18n.__('plugin.owStats.accStats.rank')}:* ${data.accountStats.rank || '-'}`,
+			`*${i18n.translate('plugin.owStats.accStats.level')}:* ${data.accountStats.level}`,
+			`*${i18n.translate('plugin.owStats.accStats.rank')}:* ${data.accountStats.rank || '-'}`,
 		];
 		const medalsStr = [
-			`*${i18n.__('plugin.owStats.medals.total')}:* ${data.medals.total || '0'}`,
-			`*${i18n.__('plugin.owStats.medals.gold')}:* ${data.medals.gold || '0'}`,
-			`*${i18n.__('plugin.owStats.medals.silver')}:* ${data.medals.silver || '0'}`,
-			`*${i18n.__('plugin.owStats.medals.bronze')}:* ${data.medals.bronze || '0'}`,
+			`*${i18n.translate('plugin.owStats.medals.total')}:* ${data.medals.total || '0'}`,
+			`*${i18n.translate('plugin.owStats.medals.gold')}:* ${data.medals.gold || '0'}`,
+			`*${i18n.translate('plugin.owStats.medals.silver')}:* ${data.medals.silver || '0'}`,
+			`*${i18n.translate('plugin.owStats.medals.bronze')}:* ${data.medals.bronze || '0'}`,
 		];
 		const gameModeStatsStr = [
-			`*${i18n.__('plugin.owStats.gameModeStats.victories')}:* ${data.gameModeStats.victories}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.eliminations')}:* ${data.gameModeStats.eliminations}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.finalBlows')}:* ${data.gameModeStats.finalBlows}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.deaths')}:* ${data.gameModeStats.deaths}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.ePerD')}:* ${data.gameModeStats.ePerD}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.totalDmg')}:* ${data.gameModeStats.totalDmg}`,
-			`*${i18n.__('plugin.owStats.gameModeStats.totalHealing')}:* ${data.gameModeStats.totalHealing}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.victories')}:* ${data.gameModeStats.victories}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.eliminations')}:* ${data.gameModeStats.eliminations}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.finalBlows')}:* ${data.gameModeStats.finalBlows}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.deaths')}:* ${data.gameModeStats.deaths}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.ePerD')}:* ${data.gameModeStats.ePerD}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.totalDmg')}:* ${data.gameModeStats.totalDmg}`,
+			`*${i18n.translate('plugin.owStats.gameModeStats.totalHealing')}:* ${data.gameModeStats.totalHealing}`,
 		];
 
 		const mostPHeroesStr = data.mostPHeroes.map((v: any) => {
@@ -250,17 +255,17 @@ export class OWStatsPlugin extends Plugin {
 		});
 
 		const embed = new Discord.MessageEmbed()
-			.setTitle(i18n.__('plugin.owStats.owStatsTitle', data.account, data.gameMode))
+			.setTitle(i18n.translate('plugin.owStats.owStatsTitle', data.account, data.gameMode))
 			.setAuthor('Overwatch Info', 'https://www.flaktest.com/wp-content/uploads/2017/01/owlogo.jpg')
 			.setColor(3447003)
 			.setThumbnail(data.avatar)
 			.setURL('https://playoverwatch.com/es-es/career/pc/eu/' + data.account.replace('#', '-'))
 		// Row 1
-			.addField(i18n.__('plugin.owStats.accStats.title'), accStatsStr, true)
-			.addField(i18n.__('plugin.owStats.medals.title'), medalsStr, true);
+			.addField(i18n.translate('plugin.owStats.accStats.title'), accStatsStr, true)
+			.addField(i18n.translate('plugin.owStats.medals.title'), medalsStr, true);
 		// Row 2
-		/* .addField(i18n.__("plugin.owStats.gameModeStats.title"), gameModeStatsStr, true)
-			.addField(i18n.__("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)*/
+		/* .addField(i18n.translate("plugin.owStats.gameModeStats.title"), gameModeStatsStr, true)
+			.addField(i18n.translate("plugin.owStats.mostUsedHeroes.title"), mostPHeroesStr, true)*/
 
 		return (embed);
 	}

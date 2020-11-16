@@ -1,7 +1,8 @@
 import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
-import { i18n, getPath } from '@helpers/functions';
+import { getPath } from '@helpers/functions';
+import { getI18N } from '@helpers/bootstrapper';
 import * as Discord from 'discord.js';
 
 export class WoWLogsPlugin extends Plugin {
@@ -13,7 +14,9 @@ export class WoWLogsPlugin extends Plugin {
 			}
 		});
 
-		const getLogsCmd = new Command('logs', 'Warcraft Logs', i18n.__('plugin.warcraftLogs.desc'), this.getLogs);
+		const i18n = getI18N();
+
+		const getLogsCmd = new Command('logs', 'Warcraft Logs', i18n.translate('plugin.warcraftLogs.desc'), this.getLogs);
 		super.addCommand(getLogsCmd);	
 	}
 
@@ -21,6 +24,7 @@ export class WoWLogsPlugin extends Plugin {
 		// Warcraft Logs api
 		const api = require('weasel.js');
 
+		const i18n = getI18N();
 		const S = WoWLogsPlugin.getConfigStructure();
 		const config = this.configuration as typeof S;
 		// Set the public WCL api-key that you get from https://www.warcraftlogs.com/accounts/changeuser
@@ -45,15 +49,15 @@ export class WoWLogsPlugin extends Plugin {
 					const date = d.toLocaleString('en-GB', options);
 					const info = [{
 						name: `${e.title} - https://www.warcraftlogs.com/reports/${e.id}`,
-						value: i18n.__('plugin.warcraftLogs.logDate', date, e.owner),
+						value: i18n.translate('plugin.warcraftLogs.logDate', date, e.owner),
 					}];
 					logInfo = logInfo.concat(info);
 				});
 
 				const embedMsg = new Discord.MessageEmbed()
-					.setAuthor(i18n.__('WarCraft Logs', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
+					.setAuthor(i18n.translate('WarCraft Logs', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
 					.setColor(3447003)
-					.setTitle(`${i18n.__('plugin.warcraftLogs.atWarcraftLogs', config.guildInfo.guildName)}`)
+					.setTitle(`${i18n.translate('plugin.warcraftLogs.atWarcraftLogs', config.guildInfo.guildName)}`)
 					.setURL('https://www.warcraftlogs.com/guilds/154273') // FIXME: 404
 					.addFields(logInfo);
 				resolve(embedMsg);

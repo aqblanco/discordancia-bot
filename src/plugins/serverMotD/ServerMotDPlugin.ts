@@ -1,10 +1,9 @@
 import { Plugin } from '@classes/Plugin.class';
 import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from '@classes/Command.class';
-import { i18n } from '@helpers/functions';
 import * as Discord from 'discord.js';
 import { ServerRepository } from '@persistence/repositories/serverRepository';
-import { getDB } from '@helpers/bootstrapper';
+import { getDB, getI18N } from '@helpers/bootstrapper';
 import { ServerEntity } from '@persistence/entities/Server';
 import { UserServerRepository } from '@persistence/repositories/userServerRepository';
 
@@ -12,13 +11,14 @@ export class ServerMotDPlugin extends Plugin {
 	constructor() {
 		super('Server Message of the Day', {});
 
+		const i18n = getI18N();
 		const motdArgs: CommandArgument[] = [{
-			'tag': i18n.__('plugin.serverMotD.args.newMessage.tag'),
-			'desc': i18n.__('plugin.serverMotD.args.newMessage.desc'),
+			'tag': i18n.translate('plugin.serverMotD.args.newMessage.tag'),
+			'desc': i18n.translate('plugin.serverMotD.args.newMessage.desc'),
 			'optional': true,
 		}];
 
-		const serverMotDCmd = new Command('motd', 'Message of the Day', i18n.__('plugin.serverMotD.desc'), this.motd, CommandLevel.BotManager, [], motdArgs);
+		const serverMotDCmd = new Command('motd', 'Message of the Day', i18n.translate('plugin.serverMotD.desc'), this.motd, CommandLevel.BotManager, [], motdArgs);
 		super.addCommand(serverMotDCmd);
 
 		const onConnectWelcomeEvent = new EventHandler<"presenceUpdate">("presenceUpdate", this.onConnectWelcome);
@@ -28,6 +28,8 @@ export class ServerMotDPlugin extends Plugin {
 	private async onConnectWelcome(oldMember: Discord.Presence, newMember: Discord.Presence): Promise<void> {
 		// Interval of days to show MotD if it has not changed
 		const daysInterval = 7;
+
+		const i18n = getI18N();
 
 		// Trigger when coming from offline
 		if (!oldMember || oldMember.status === 'offline') {
@@ -64,7 +66,7 @@ export class ServerMotDPlugin extends Plugin {
 					if (changed || daysLastChange >= daysInterval) {
 						// PM with welcome message to non-bot users
 						if (!newMember.user.bot) {
-							newMember.user.send(`***${i18n.__('plugin.serverMotD.motd')}${`***: ${motdTxt}`}`)
+							newMember.user.send(`***${i18n.translate('plugin.serverMotD.motd')}${`***: ${motdTxt}`}`)
 								// TODO: Translation
 								.then(() => console.log(`MotD enviado al usuario ${newMember.user.username}`))
 								.catch(console.error);
@@ -119,16 +121,17 @@ export class ServerMotDPlugin extends Plugin {
 
 	// Needs to be declared as an attribute because of it making calls to other internal methods
 	private displayMotd = (msg: string): Promise<Discord.MessageEmbed> => {
+		const i18n = getI18N();
 		return new Promise((resolve, reject) => {
 			if (msg != null && msg != '') {
 				const embedMsg =new Discord.MessageEmbed()
-					.setAuthor(i18n.__('plugin.serverMotD.motd', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
+					.setAuthor(i18n.translate('plugin.serverMotD.motd', 'https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png'))
 					.setColor(3447003)
 					.setDescription(msg);
 
 				resolve(embedMsg);
 			} else {
-				reject(new Error(i18n.__('plugin.serverMotD.error.noMotDSet')));
+				reject(new Error(i18n.translate('plugin.serverMotD.error.noMotDSet')));
 			}
 		});
 	}

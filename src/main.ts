@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { i18n, pluginIsEnabled } from '@helpers/functions';
+import { pluginIsEnabled } from '@helpers/functions';
 import * as Bootstrapper from '@helpers/bootstrapper';
 import { DiscordBot as DiscordBot } from '@classes/DiscordBot.class';
 import { EventHandler } from '@classes/EventHandler.class';
@@ -19,6 +19,7 @@ async function main() {
 	const cmdPrefix = config.botConfig.prefix;
 	const userName = config.botConfig.botUserName;
 	const activity = 'Ayuda: ' + cmdPrefix + ' ayuda';
+	const i18n = Bootstrapper.getI18N();
 	
 	const botConfig = {
 		prefix: cmdPrefix,
@@ -36,7 +37,7 @@ async function main() {
 		/*client.user.setUsername(config.development.botConfig.username);
 		client.user.setActivity('Ayuda: ' + cmdPrefix + ' ayuda');*/
 		
-		console.log(i18n.__('botStarted'));
+		console.log(i18n.translate('botStarted'));
 	});
 	botObj.addEventHandler(readyEvent);
 
