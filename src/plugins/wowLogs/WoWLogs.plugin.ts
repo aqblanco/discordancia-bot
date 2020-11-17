@@ -4,7 +4,9 @@ import { Command } from '@classes/Command.class';
 import { getPath } from '@helpers/functions';
 import { getI18N } from '@helpers/bootstrapper';
 import * as Discord from 'discord.js';
+import { BotPlugin } from '@decorators/BotPlugin';
 
+@BotPlugin('wowlogs')
 export class WoWLogsPlugin extends Plugin {
 	constructor() {
 		super('World Of Warcraft Logs', {

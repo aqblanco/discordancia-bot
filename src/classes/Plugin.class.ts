@@ -58,6 +58,10 @@ export class Plugin {
 		this._eventHandlers.push(eventHandler);
 	}
 
+	get name(): string {
+		return this._name;
+	}
+
 	get commands(): Command[] {
 		return this._commands;
 	}

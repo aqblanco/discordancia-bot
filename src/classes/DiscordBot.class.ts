@@ -1,9 +1,11 @@
 import { Plugin } from '@classes/Plugin.class';
 import { Command } from '@classes/Command.class';
 import { EventHandler } from '@classes/EventHandler.class';
-import { HelpPlugin } from '@plugins/help/HelpPlugin';
+import { HelpPlugin } from '@plugins/help/Help.plugin';
 import * as Discord from 'discord.js';
-import { formatError } from '@helpers/functions';
+import { formatError, getPath } from '@helpers/functions';
+import { Autoloader } from 'autoloader-ts';
+import { BotPluginMetdataKey } from '@decorators/BotPlugin';
 
 export class DiscordBot {
 	private static discordBotInstance: DiscordBot;
@@ -17,17 +19,32 @@ export class DiscordBot {
 		this.discordClient = new Discord.Client();
 	}
 
-	static initializeBot(config: BotConfig): DiscordBot {
+	static async initializeBot(config: BotConfig): Promise<DiscordBot> {
 		const bot = DiscordBot.getBot(config);
+		const allowedPlugins = config.plugins || [];
+		const ignoredPlugins = ['help'];
 		// Register help plugin
 		const helpInstance = bot.registerPlugin(HelpPlugin);
-		// Register plugins and add to help
-		config.plugins.forEach((p) => {
-			const pInstance = bot.registerPlugin(p);
-			const cmds = pInstance.commands;
-			helpInstance.addCommandsHelp(cmds);
+		
+		return new Promise((resolve, reject) => {
+			// Get all available plugins
+			bot.readPluginDir()
+			.then (readResult => {
+				const plugins = readResult.getResult().exports;
+				// Register plugins and add to help
+				plugins.forEach((p) => {
+					const pLabel: string = Reflect.getMetadata(BotPluginMetdataKey, p);
+					// Register only desired plugins
+					if (allowedPlugins.includes(pLabel) && !ignoredPlugins.includes(pLabel)) {
+						const pInstance = bot.registerPlugin(p);
+						const cmds = pInstance.commands;
+						helpInstance.addCommandsHelp(cmds);
+					}
+				});
+
+				resolve(bot);
+			});
 		});
-		return bot;
 	}
 
 	static getBot(config?: BotConfig): DiscordBot {
@@ -148,6 +165,13 @@ export class DiscordBot {
 		}
 
 		return p;
+	}
+
+	private async readPluginDir() {
+		// Create the loader
+		const loader = await Autoloader.dynamicImport();
+		// Load and transpile all plugin files
+		return await loader.fromGlob(getPath('plugins')+'**/*.plugin.js');
 	}
 
 	addPlugin(plugin: Plugin): void {

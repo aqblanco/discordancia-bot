@@ -5,9 +5,11 @@ import { validateBTag } from '@helpers/functions';
 import { UserRepository } from '@persistence/repositories/userRepository';
 import * as Discord from 'discord.js';
 import { getDB, getI18N } from '@helpers/bootstrapper';
+import { BotPlugin } from '@decorators/BotPlugin';
 
 const owjs = require('overwatch-js');
 
+@BotPlugin('owstats')
 export class OWStatsPlugin extends Plugin {
 	constructor() {
 		super('Overwatch stats', {});

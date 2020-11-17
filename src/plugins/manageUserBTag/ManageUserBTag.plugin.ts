@@ -4,7 +4,9 @@ import { Command } from '@classes/Command.class';
 import { UserRepository } from '@persistence/repositories/userRepository';
 import { validateBTag } from '@helpers/functions';
 import { getDB, getI18N } from '@helpers/bootstrapper';
+import { BotPlugin } from '@decorators/BotPlugin';
 
+@BotPlugin('manageuserbtag')
 export class ManageUserBTagPlugin extends Plugin {
 	constructor() {
 		super('Manage user Battle Tag', {});

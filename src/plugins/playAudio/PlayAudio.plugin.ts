@@ -6,9 +6,11 @@ import { getPath } from '@helpers/functions';
 import { resources } from '../../resources';
 import { getI18N } from '@helpers/bootstrapper';
 import * as Discord from 'discord.js';
+import { BotPlugin } from '@decorators/BotPlugin';
 
 const rm = new ResourceManager(`${getPath('assets')}audio/`, new Map([['audio', resources.audio]]));
 
+@BotPlugin('playaudio')
 export class PlayAudioPlugin extends Plugin {
 	constructor() {
 		super('Play Audio', {});

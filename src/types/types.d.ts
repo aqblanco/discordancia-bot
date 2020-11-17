@@ -83,7 +83,7 @@ declare global {
 		discordAPIKey: string,
 		botUserName: string,
 		botActivity: string,
-		plugins: typeof Plugin[],
+		plugins?: string[],
 	}
 
 	type Locale = "aa"|"ab"|"ae"|"af"|"ak"|"am"|"an"|"ar"|"as"|"av"|"ay"|"az"|"ba"|"be"|

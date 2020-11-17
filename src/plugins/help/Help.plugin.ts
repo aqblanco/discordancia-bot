@@ -4,7 +4,9 @@ import { EventHandler } from '@classes/EventHandler.class';
 import { Command } from "@classes/Command.class";
 import { getI18N } from '@helpers/bootstrapper';
 import * as Discord from 'discord.js';
+import { BotPlugin } from '@decorators/BotPlugin';
 
+@BotPlugin('help')
 export class HelpPlugin extends Plugin {
 	commandList: Command[] = [];
 

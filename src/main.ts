@@ -1,13 +1,7 @@
 import "reflect-metadata";
-import { pluginIsEnabled } from '@helpers/functions';
 import * as Bootstrapper from '@helpers/bootstrapper';
 import { DiscordBot as DiscordBot } from '@classes/DiscordBot.class';
 import { EventHandler } from '@classes/EventHandler.class';
-import { PlayAudioPlugin } from '@plugins/playAudio/PlayAudioPlugin';
-import { WoWLogsPlugin } from '@plugins/wowLogs/WoWLogsPlugin';
-import { ServerMotDPlugin } from '@plugins/serverMotD/ServerMotDPlugin';
-import { OWStatsPlugin } from '@plugins/owStats/OWStatsPlugin';
-import { ManageUserBTagPlugin } from '@plugins/manageUserBTag/ManageUserBTagPlugin';
 
 async function main() {
 	// Initiliaze app
@@ -18,6 +12,7 @@ async function main() {
 	const token = config.apiKeys.discordAPIKey;
 	const cmdPrefix = config.botConfig.prefix;
 	const userName = config.botConfig.botUserName;
+	const plugins = config.botConfig.enabledPlugins;
 	const activity = 'Ayuda: ' + cmdPrefix + ' ayuda';
 	const i18n = Bootstrapper.getI18N();
 	
@@ -26,10 +21,10 @@ async function main() {
 		discordAPIKey: token,
 		botUserName: userName,
 		botActivity: activity,
-		plugins: [PlayAudioPlugin, WoWLogsPlugin, OWStatsPlugin, ManageUserBTagPlugin, ServerMotDPlugin],
+		plugins: plugins,
 	}
 
-	const botObj = DiscordBot.initializeBot(botConfig);
+	const botObj = await DiscordBot.initializeBot(botConfig);
 
 	// The ready event is vital, it means that your bot will only start reacting to information
 	// from Discord after_ ready is emitted

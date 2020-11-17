@@ -6,7 +6,9 @@ import { ServerRepository } from '@persistence/repositories/serverRepository';
 import { getDB, getI18N } from '@helpers/bootstrapper';
 import { ServerEntity } from '@persistence/entities/Server';
 import { UserServerRepository } from '@persistence/repositories/userServerRepository';
+import { BotPlugin } from '@decorators/BotPlugin';
 
+@BotPlugin('servermotd')
 export class ServerMotDPlugin extends Plugin {
 	constructor() {
 		super('Server Message of the Day', {});
